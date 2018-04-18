@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpServer", "HttpServer\HttpServer.csproj", "{03524FBC-12DD-472E-AF4B-CEA5F4802AC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpServerTest", "HttpServerTest\HttpServerTest.csproj", "{9C1BD4AD-C9A4-49CD-ABDE-FA339F017343}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03524FBC-12DD-472E-AF4B-CEA5F4802AC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03524FBC-12DD-472E-AF4B-CEA5F4802AC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03524FBC-12DD-472E-AF4B-CEA5F4802AC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03524FBC-12DD-472E-AF4B-CEA5F4802AC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C1BD4AD-C9A4-49CD-ABDE-FA339F017343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C1BD4AD-C9A4-49CD-ABDE-FA339F017343}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C1BD4AD-C9A4-49CD-ABDE-FA339F017343}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C1BD4AD-C9A4-49CD-ABDE-FA339F017343}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
