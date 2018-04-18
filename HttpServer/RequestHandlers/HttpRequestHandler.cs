@@ -7,7 +7,7 @@ namespace HttpServer.RequestHandlers
     internal class HttpRequestHandler : IRequestHandler
     {
         private HttpRequestParser _requestParser;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public HttpRequestHandler(HttpRequestParser requestParser, ILogger logger)
         {

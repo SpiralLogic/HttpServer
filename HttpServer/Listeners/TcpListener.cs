@@ -81,21 +81,21 @@ namespace HttpServer.Listeners
             client.Close();
         }
 
+        private string ReadClientStream(Stream clientStream)
+        {
+            var bytes = new byte[BufferSize];
+            var bytesRead = clientStream.Read(bytes, 0, BufferSize);
+            var data = Encoding.GetString(bytes, 0, bytesRead);
+            
+            return data;
+        }
+
         private void RespondToRequest(string data, Stream clientStream)
         {
             var response = _requestHandler.HandleRequest(data);
             var result = Encoding.GetBytes(response);
 
             clientStream.Write(result, 0, result.Length);
-        }
-
-        private string ReadClientStream(Stream clientStream)
-        {
-            var bytes = new byte[BufferSize];
-            var i = clientStream.Read(bytes, 0, BufferSize);
-            var data = Encoding.GetString(bytes, 0, i);
-            
-            return data;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using HttpServer.Listeners;
 using HttpServer.Loggers;
@@ -6,11 +7,11 @@ using HttpServer.RequestHandlers;
 
 namespace HttpServer
 {
-    public class Server
+    public class Server : IDisposable
     {
+        private readonly ILogger _logger;
         private readonly IListener _listener;
-        private HttpRequestHandler _handler;
-        private ILogger _logger;
+        private readonly HttpRequestHandler _handler;
         public int Port => _listener.Port;
         public Encoding Encoding => _listener.Encoding;
         public bool IsRunning => _listener.IsListening;
@@ -30,12 +31,13 @@ namespace HttpServer
 
         public void Stop()
         {
-            if (_listener.IsListening )_listener.Stop();
+            if (_listener.IsListening) _listener.Stop();
         }
 
-        ~Server()
+        public void Dispose()
         {
-            _listener.Stop();
+            Stop();
+            GC.SuppressFinalize(this);
         }
     }
 }

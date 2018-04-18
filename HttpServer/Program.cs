@@ -9,7 +9,7 @@ namespace HttpServer
         static void Main(string[] args)
         {
             var logger = new ConsoleLogger();
-            var server = new Server(logger);
+            var server = new Server(logger, 8080);
 
             server.Start();
             while (server.IsRunning)

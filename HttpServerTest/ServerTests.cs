@@ -13,21 +13,23 @@ namespace HttpServerTest
         public void HttpServerCanStart()
         {
             var logger = new TestLogger();
-            var server = new Server(logger);
-
-            server.Start();
-            Assert.True(server.IsRunning);
+            using (var server = new Server(logger))
+            {
+                server.Start();
+                Assert.True(server.IsRunning);
+            }
         }
 
         [Fact]
         public void HttpServerCanStop()
         {
             var logger = new TestLogger();
-            var server = new Server(logger);
-
-            server.Start();
-            server.Stop();
-            Assert.False(server.IsRunning);
+            using (var server = new Server(logger))
+            {
+                server.Start();
+                server.Stop();
+                Assert.False(server.IsRunning);
+            }
         }
 
         [Fact]
@@ -35,24 +37,27 @@ namespace HttpServerTest
         {
             const int testPort = 8111;
             var logger = new TestLogger();
-            var server = new Server(logger, testPort);
-            server.Start();
+            using (var server = new Server(logger, testPort))
+            {
+                server.Start();
 
-            Assert.Equal(testPort, server.Port);
+                Assert.Equal(testPort, server.Port);
+            }
         }
 
         [Fact]
         public void CanReceiveRequests()
         {
             const string requestString = "TEST";
-            
-            var logger = new TestLogger();
-            var server = new Server(logger);
-            server.Start();
-            
-            WriteToListener(server.Port, server.Encoding, requestString);
 
-            Assert.Equal(requestString, logger.LastMessage);
+            var logger = new TestLogger();
+            using (var server = new Server(logger))
+            {
+                server.Start();
+
+                WriteToListener(server.Port, server.Encoding, requestString);
+                Assert.Equal(requestString, logger.LastMessage);
+            }
         }
 
         private static void WriteToListener(int port, Encoding encoding, string messageString)
