@@ -1,4 +1,4 @@
-﻿namespace HttpServer
+﻿namespace HttpServer.Loggers
 {
     public interface ILogger
     {

@@ -1,33 +1,28 @@
-﻿namespace HttpServer
+﻿using HttpServer.Listeners;
+using HttpServer.Loggers;
+
+namespace HttpServer
 {
-    public class Server 
+    public class Server
     {
         private readonly IListener _listener;
-        private ILogger _logger;
         public bool IsRunning => _listener.IsListening;
 
         public Server(IListener listener, ILogger logger)
         {
-            _logger = logger;
             _listener = listener;
-            _listener.RequestReceived += (sender, args) => ProcessRequest(args.RequestString);
         }
 
         public void Start()
         {
-            _listener.Start();
+            if (!_listener.IsListening) _listener.Start();
         }
 
         public void Stop()
         {
-            _listener.Stop();
+            if (_listener.IsListening )_listener.Stop();
         }
 
-        private void ProcessRequest(string requestString)
-        {
-            _logger.Log(requestString);
-        }
-        
         ~Server()
         {
             _listener.Stop();

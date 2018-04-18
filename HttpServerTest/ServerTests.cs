@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using HttpServer;
+using HttpServer.Listeners;
+using HttpServer.Loggers;
 using Xunit;
 
 namespace HttpServerTest
@@ -8,13 +10,13 @@ namespace HttpServerTest
     public class ServerTests
     {
         private readonly TestListener _listener;
-        private readonly TestLogger _logger;
         private readonly Server _server;
+        private readonly TestLogger _logger;
 
         public ServerTests()
         {
-            _listener = new TestListener();
             _logger = new TestLogger();
+            _listener = new TestListener();
             _server = new Server(_listener, _logger);
         }
 
@@ -34,17 +36,6 @@ namespace HttpServerTest
             Assert.False(_server.IsRunning);
             Assert.False(_listener.IsListening);
         }
-
-        [Fact]
-        public void HttpServerCanWriteRequestsToLogger()
-        {
-            const string requestString = "Test Request";
-            
-            _server.Start();
-            _listener.SimulateRequest(requestString);
-            
-            Assert.Equal(requestString, _logger.Message);
-        }
     }
 
     internal class TestListener : IListener
@@ -58,16 +49,11 @@ namespace HttpServerTest
         {
             IsListening = false;
         }
-
-        public void SimulateRequest(string request)
-        {
-            RequestReceived?.Invoke(this, new RequestReceivedEventArgs(request));
-        }
+        
 
         public bool IsListening { get; private set; }
         public Encoding Encoding { get; } = Encoding.ASCII;
         public int Port { get; } = 8000;
-        public event EventHandler<RequestReceivedEventArgs> RequestReceived;
     }
 
     internal class TestLogger : ILogger

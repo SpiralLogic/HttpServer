@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using HttpServer;
+using HttpServer.Loggers;
 using Xunit;
 using TcpListener = HttpServer.TcpListener;
 
@@ -11,7 +13,8 @@ namespace HttpServerTest
         [Fact]
         public void CanStart()
         {
-            var listener = new TcpListener(IPAddress.Loopback);
+            var requestHandler = new TestRequestHandler();
+            var listener = new TcpListener(requestHandler, IPAddress.Loopback);
             listener.Start();
             Assert.True(listener.IsListening);
         }
@@ -19,7 +22,8 @@ namespace HttpServerTest
         [Fact]
         public void CanStop()
         {
-            var listener = new TcpListener(IPAddress.Loopback);
+            var requestHandler = new TestRequestHandler();
+            var listener = new TcpListener(requestHandler, IPAddress.Loopback);
             listener.Start();
             listener.Stop();
 
@@ -30,7 +34,8 @@ namespace HttpServerTest
         public void CanListenOnSpecifiedPort()
         {
             const int testPort = 8111;
-            var listener = new TcpListener(IPAddress.Loopback, testPort);
+            var requestHandler = new TestRequestHandler();
+            var listener = new TcpListener(requestHandler, IPAddress.Loopback, testPort);
             listener.Start();
 
             Assert.Equal(testPort, listener.Port);
@@ -39,19 +44,19 @@ namespace HttpServerTest
         [Fact]
         public void CanReceiveRequests()
         {
-            const string requestMessage = "TEST";
-            
-            var listener = new TcpListener(IPAddress.Loopback);
-            listener.Start();
+            const string requestString = "TEST";
+            var requestHandler = new TestRequestHandler();
+            var listener = new TcpListener(requestHandler, IPAddress.Loopback);
             var request = string.Empty;
-            listener.RequestReceived += (sender, args) => { request = args.RequestString; };
 
-            WriteToListner(listener.Port, listener.Encoding, requestMessage);
+            listener.Start();
 
-            Assert.Equal(requestMessage, request);
+            WriteToListener(listener.Port, listener.Encoding, requestString);
+
+            Assert.Equal(requestString, requestHandler.LastRequest);
         }
 
-        private static void WriteToListner(int port, Encoding encoding, string messageString)
+        private static void WriteToListener(int port, Encoding encoding, string messageString)
         {
             using (var client = new TcpClient())
             {
@@ -60,6 +65,17 @@ namespace HttpServerTest
                 var writeBuffer = encoding.GetBytes(messageString);
                 stream.Write(writeBuffer);
             }
+        }
+    }
+
+    internal class TestRequestHandler : IRequestHandler
+    {
+        public string LastRequest { get; private set; }
+        
+        public string HandleRequest(string request)
+        {
+            LastRequest = request;
+            return request;
         }
     }
 }
