@@ -12,8 +12,8 @@ namespace HttpServer.Listeners
     {
         private const int BufferSize = 1024;
 
-        private readonly IPAddress _ipAddress;
         private readonly int _port;
+        private readonly IPAddress _ipAddress;
         private readonly IRequestHandler _requestHandler;
 
         private System.Net.Sockets.TcpListener _listener;
@@ -25,11 +25,9 @@ namespace HttpServer.Listeners
 
         public TcpListener(IRequestHandler requestHandler, IPAddress ipAddress = null, int port = 0)
         {
-            if (port < 0) throw new ArgumentException(nameof(port));
-            
+            _requestHandler = requestHandler ?? throw new ArgumentException(nameof(requestHandler));
+            _port = port >= 0 ? port : throw new ArgumentException(nameof(port));
             _ipAddress = ipAddress ?? IPAddress.Loopback;
-            _requestHandler = requestHandler;
-            _port = port;
         }
 
         public void Start()

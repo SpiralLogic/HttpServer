@@ -1,6 +1,7 @@
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using HttpServer;
-using HttpServer.Listeners;
 using HttpServer.Loggers;
 using Xunit;
 
@@ -8,60 +9,71 @@ namespace HttpServerTest
 {
     public class ServerTests
     {
-        private readonly TestListener _listener;
-        private readonly Server _server;
-        private readonly TestLogger _logger;
-
-        public ServerTests()
-        {
-            _logger = new TestLogger();
-            _listener = new TestListener();
-            _server = new Server(_listener, _logger);
-        }
-
         [Fact]
         public void HttpServerCanStart()
         {
-            _server.Start();
-            Assert.True(_server.IsRunning);
-            Assert.True(_listener.IsListening);
+            var logger = new TestLogger();
+            var server = new Server(logger);
+
+            server.Start();
+            Assert.True(server.IsRunning);
         }
 
         [Fact]
         public void HttpServerCanStop()
         {
-            _server.Start();
-            _server.Stop();
-            Assert.False(_server.IsRunning);
-            Assert.False(_listener.IsListening);
-        }
-    }
+            var logger = new TestLogger();
+            var server = new Server(logger);
 
-    internal class TestListener : IListener
-    {
-        public void Start()
+            server.Start();
+            server.Stop();
+            Assert.False(server.IsRunning);
+        }
+
+        [Fact]
+        public void CanListenOnSpecifiedPort()
         {
-            IsListening = true;
+            const int testPort = 8111;
+            var logger = new TestLogger();
+            var server = new Server(logger, testPort);
+            server.Start();
+
+            Assert.Equal(testPort, server.Port);
         }
 
-        public void Stop()
+        [Fact]
+        public void CanReceiveRequests()
         {
-            IsListening = false;
-        }
-        
+            const string requestString = "TEST";
+            
+            var logger = new TestLogger();
+            var server = new Server(logger);
+            server.Start();
+            
+            WriteToListener(server.Port, server.Encoding, requestString);
 
-        public bool IsListening { get; private set; }
-        public Encoding Encoding { get; } = Encoding.ASCII;
-        public int Port { get; } = 8000;
+            Assert.Equal(requestString, logger.LastMessage);
+        }
+
+        private static void WriteToListener(int port, Encoding encoding, string messageString)
+        {
+            using (var client = new TcpClient())
+            {
+                client.Connect(IPAddress.Loopback, port);
+                var stream = client.GetStream();
+                var writeBuffer = encoding.GetBytes(messageString);
+                stream.Write(writeBuffer);
+            }
+        }
     }
 
     internal class TestLogger : ILogger
     {
-        internal string Message { get; private set; } = string.Empty;
+        internal string LastMessage { get; private set; } = string.Empty;
 
         public void Log(string message)
         {
-            Message = message;
+            LastMessage = message;
         }
     }
 }

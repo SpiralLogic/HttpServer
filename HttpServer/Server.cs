@@ -1,23 +1,31 @@
-﻿using HttpServer.Listeners;
+﻿using System.Net;
+using System.Text;
+using HttpServer.Listeners;
 using HttpServer.Loggers;
+using HttpServer.RequestHandlers;
 
 namespace HttpServer
 {
     public class Server
     {
         private readonly IListener _listener;
+        private HttpRequestHandler _handler;
         private ILogger _logger;
+        public int Port => _listener.Port;
+        public Encoding Encoding => _listener.Encoding;
         public bool IsRunning => _listener.IsListening;
 
-        public Server(IListener listener, ILogger logger)
+        public Server(ILogger logger, int port = 0)
         {
             _logger = logger;
-            _listener = listener;
+            _handler = new HttpRequestHandler(new HttpRequestParser(), logger);
+            _listener = new TcpListener(_handler, IPAddress.Loopback, port);
         }
 
         public void Start()
         {
             if (!_listener.IsListening) _listener.Start();
+            _logger.Log("Waiting for connection on port: " + _listener.Port);
         }
 
         public void Stop()
