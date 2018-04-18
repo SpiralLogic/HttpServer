@@ -1,4 +1,4 @@
-﻿namespace HttpServer
+﻿namespace HttpServer.RequestHandlers
 {
     public interface IRequestHandler
     {

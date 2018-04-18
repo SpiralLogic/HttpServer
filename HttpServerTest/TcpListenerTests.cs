@@ -1,10 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using HttpServer;
-using HttpServer.Loggers;
+using HttpServer.RequestHandlers;
 using Xunit;
-using TcpListener = HttpServer.TcpListener;
+using TcpListener = HttpServer.Listeners.TcpListener;
 
 namespace HttpServerTest
 {

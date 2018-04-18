@@ -1,10 +1,11 @@
 ﻿using System.Net;
+using HttpServer.Listeners;
 using HttpServer.Loggers;
 using HttpServer.RequestHandlers;
 
 namespace HttpServer
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {

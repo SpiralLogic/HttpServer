@@ -1,14 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpServer.Listeners;
+using HttpServer.RequestHandlers;
 
-namespace HttpServer
+namespace HttpServer.Listeners
 {
     public class TcpListener : IListener
     {
