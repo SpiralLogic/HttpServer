@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -9,38 +10,51 @@ namespace HttpServerTest
 {
     public class ServerTests
     {
+        private readonly Server _server;
+        private readonly TestLogger _logger;
+
+        public ServerTests()
+        {
+            _logger = new TestLogger();
+            _server = new Server(_logger);
+        }
+
         [Fact]
         public void HttpServerCanStart()
         {
-            var logger = new TestLogger();
-            using (var server = new Server(logger))
-            {
-                server.Start();
-                Assert.True(server.IsRunning);
-            }
+            _server.Start();
+            Assert.True(_server.IsRunning);
+        }
+
+        [Fact]
+        public void HttpServerCantStartTwice()
+        {
+            _server.Start();
+            Assert.Throws<ApplicationException>(() => _server.Start());
         }
 
         [Fact]
         public void HttpServerCanStop()
         {
-            var logger = new TestLogger();
-            using (var server = new Server(logger))
-            {
-                server.Start();
-                server.Stop();
-                Assert.False(server.IsRunning);
-            }
+            _server.Start();
+            _server.Stop();
+            Assert.False(_server.IsRunning);
+        }
+
+        [Fact]
+        public void PortCantBeTooLarge()
+        {
+            const int testPort = 65536;
+            Assert.Throws<ArgumentException>(() => new Server(new TestLogger(), testPort));
         }
 
         [Fact]
         public void CanListenOnSpecifiedPort()
         {
-            const int testPort = 8111;
-            var logger = new TestLogger();
-            using (var server = new Server(logger, testPort))
+            const int testPort = 8765;
+            using (var server = new Server(new TestLogger(), testPort))
             {
                 server.Start();
-
                 Assert.Equal(testPort, server.Port);
             }
         }
@@ -49,18 +63,13 @@ namespace HttpServerTest
         public void CanReceiveRequests()
         {
             const string requestString = "TEST";
+            _server.Start();
 
-            var logger = new TestLogger();
-            using (var server = new Server(logger))
-            {
-                server.Start();
-
-                WriteToListener(server.Port, server.Encoding, requestString);
-                Assert.Equal(requestString, logger.LastMessage);
-            }
+            _logger.LogWrittenEvent += (o, a) => Assert.Equal(requestString, _logger.LastMessage);
+            SimulateRequest(_server.Port, _server.Encoding, requestString);
         }
 
-        private static void WriteToListener(int port, Encoding encoding, string messageString)
+        private void SimulateRequest(int port, Encoding encoding, string messageString)
         {
             using (var client = new TcpClient())
             {
@@ -70,15 +79,22 @@ namespace HttpServerTest
                 stream.Write(writeBuffer);
             }
         }
+
+        ~ServerTests()
+        {
+            _server.Dispose();
+        }
     }
 
     internal class TestLogger : ILogger
     {
         internal string LastMessage { get; private set; } = string.Empty;
+        internal event EventHandler LogWrittenEvent;
 
         public void Log(string message)
         {
             LastMessage = message;
+            LogWrittenEvent?.Invoke(this, new EventArgs());
         }
     }
 }

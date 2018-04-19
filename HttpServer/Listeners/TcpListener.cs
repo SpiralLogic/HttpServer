@@ -11,6 +11,7 @@ namespace HttpServer.Listeners
     public class TcpListener : IListener
     {
         private const int BufferSize = 1024;
+        
 
         private readonly int _port;
         private readonly IPAddress _ipAddress;
@@ -26,19 +27,21 @@ namespace HttpServer.Listeners
         public TcpListener(IRequestHandler requestHandler, IPAddress ipAddress = null, int port = 0)
         {
             _requestHandler = requestHandler ?? throw new ArgumentException(nameof(requestHandler));
-            _port = port >= 0 ? port : throw new ArgumentException(nameof(port));
             _ipAddress = ipAddress ?? IPAddress.Loopback;
+            _port = port;
         }
 
         public void Start()
         {
+            var listenerStartedEvent = new ManualResetEventSlim(false);
             _cancellationTokenSource = new CancellationTokenSource();
 
             try
             {
                 _listener = new System.Net.Sockets.TcpListener(_ipAddress, _port);
                 _listener.Start();
-                Task.Run(() => { Listen(); }, _cancellationTokenSource.Token);
+                Task.Run(() => { Listen(listenerStartedEvent); }, _cancellationTokenSource.Token);
+                listenerStartedEvent.Wait(_cancellationTokenSource.Token);
                 IsListening = true;
             }
             catch (TaskCanceledException)
@@ -49,19 +52,27 @@ namespace HttpServer.Listeners
 
         public void Stop()
         {
-            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Cancel(true);
             _listener.Stop();
             _listener = null;
             IsListening = false;
         }
 
-        private void Listen()
+        private void Listen(ManualResetEventSlim listenerStartedEvent)
         {
             while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
-                if (!_listener.Pending()) continue;
+                listenerStartedEvent.Set();
+                if (_listener.Pending())
+                {
+                    ProcessRequest();
 
-                ProcessRequest();
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+
             }
         }
 

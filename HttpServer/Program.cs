@@ -1,6 +1,4 @@
-﻿using System.Net;
-using HttpServer.Listeners;
-using HttpServer.Loggers;
+﻿using HttpServer.Loggers;
 
 namespace HttpServer
 {
