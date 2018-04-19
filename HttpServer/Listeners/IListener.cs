@@ -8,6 +8,6 @@ namespace HttpServer.Listeners
         void Stop();
         bool IsListening { get; }
         Encoding Encoding { get; }
-        int Port { get; }
+        int Port { get; set; }
     }
 }

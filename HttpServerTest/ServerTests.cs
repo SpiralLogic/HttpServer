@@ -1,100 +1,97 @@
 using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using HttpServer;
-using HttpServer.Loggers;
 using Xunit;
 
 namespace HttpServerTest
 {
     public class ServerTests
     {
-        private readonly Server _server;
-        private readonly TestLogger _logger;
-
-        public ServerTests()
-        {
-            _logger = new TestLogger();
-            _server = new Server(_logger);
-        }
-
         [Fact]
         public void HttpServerCanStart()
         {
-            _server.Start();
-            Assert.True(_server.IsRunning);
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
+            {
+                server.Start();
+                Assert.True(server.IsRunning);
+            }
         }
 
         [Fact]
         public void HttpServerCantStartTwice()
         {
-            _server.Start();
-            Assert.Throws<ApplicationException>(() => _server.Start());
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
+            {
+                server.Start();
+                Assert.Throws<ApplicationException>(() => server.Start());
+            }
         }
 
         [Fact]
         public void HttpServerCanStop()
         {
-            _server.Start();
-            _server.Stop();
-            Assert.False(_server.IsRunning);
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
+            {
+                server.Start();
+                server.Stop();
+                Assert.False(server.IsRunning);
+            }
         }
 
         [Fact]
         public void PortCantBeTooLarge()
         {
             const int testPort = 65536;
-            Assert.Throws<ArgumentException>(() => new Server(new TestLogger(), testPort));
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
+            {
+                Assert.Throws<ArgumentException>(() => server.Port = testPort);
+            }
+        }
+
+        [Fact]
+        public void PortCantBeLessThanZero()
+        {
+            const int testPort = -1;
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
+            {
+                Assert.Throws<ArgumentException>(() => server.Port = testPort);
+            }
         }
 
         [Fact]
         public void CanListenOnSpecifiedPort()
         {
             const int testPort = 8765;
-            using (var server = new Server(new TestLogger(), testPort))
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
             {
+                server.Port = testPort;
                 server.Start();
                 Assert.Equal(testPort, server.Port);
             }
         }
-
+        
         [Fact]
-        public void CanReceiveRequests()
+        public void WhenServerIsRunningCantChangePort()
         {
-            const string requestString = "TEST";
-            _server.Start();
-
-            _logger.LogWrittenEvent += (o, a) => Assert.Equal(requestString, _logger.LastMessage);
-            SimulateRequest(_server.Port, _server.Encoding, requestString);
-        }
-
-        private void SimulateRequest(int port, Encoding encoding, string messageString)
-        {
-            using (var client = new TcpClient())
+            const int testPort = 8765;
+            var handler = new TestRequestHandler();
+            var logger = new TestLogger();
+            using (var server = new Server(handler, logger))
             {
-                client.Connect(IPAddress.Loopback, port);
-                var stream = client.GetStream();
-                var writeBuffer = encoding.GetBytes(messageString);
-                stream.Write(writeBuffer);
+                server.Start();
+                Assert.Throws<ArgumentException>(() => server.Port = testPort);
             }
-        }
-
-        ~ServerTests()
-        {
-            _server.Dispose();
-        }
-    }
-
-    internal class TestLogger : ILogger
-    {
-        internal string LastMessage { get; private set; } = string.Empty;
-        internal event EventHandler LogWrittenEvent;
-
-        public void Log(string message)
-        {
-            LastMessage = message;
-            LogWrittenEvent?.Invoke(this, new EventArgs());
         }
     }
 }

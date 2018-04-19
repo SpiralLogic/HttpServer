@@ -11,18 +11,28 @@ namespace HttpServer.Listeners
     public class TcpListener : IListener
     {
         private const int BufferSize = 1024;
-        
+        private const uint LargestPort = 65535;
 
-        private readonly int _port;
         private readonly IPAddress _ipAddress;
         private readonly IRequestHandler _requestHandler;
 
+        private int _port;
         private System.Net.Sockets.TcpListener _listener;
         private CancellationTokenSource _cancellationTokenSource;
 
         public Encoding Encoding { get; } = Encoding.UTF8;
         public bool IsListening { get; private set; }
-        public int Port => !IsListening ? _port : ((IPEndPoint) _listener.Server.LocalEndPoint).Port;
+
+        public int Port
+        {
+            get => !IsListening ? _port : ((IPEndPoint) _listener.Server.LocalEndPoint).Port;
+            set
+            {
+                if (value < 0 || value > LargestPort) throw new ArgumentException("Port must be less that 65535 and 0 or greater");
+                if (IsListening) throw new ArgumentException("Server is already listening");
+                _port = value;
+            }
+        }
 
         public TcpListener(IRequestHandler requestHandler, IPAddress ipAddress = null, int port = 0)
         {
@@ -66,13 +76,11 @@ namespace HttpServer.Listeners
                 if (_listener.Pending())
                 {
                     ProcessRequest();
-
                 }
                 else
                 {
                     Thread.Sleep(100);
                 }
-
             }
         }
 
@@ -97,7 +105,7 @@ namespace HttpServer.Listeners
             var bytes = new byte[BufferSize];
             var bytesRead = clientStream.Read(bytes, 0, BufferSize);
             var data = Encoding.GetString(bytes, 0, bytesRead);
-            
+
             return data;
         }
 

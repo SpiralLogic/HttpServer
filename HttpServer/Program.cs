@@ -1,4 +1,5 @@
 ﻿using HttpServer.Loggers;
+using HttpServer.RequestHandlers;
 
 namespace HttpServer
 {
@@ -7,7 +8,8 @@ namespace HttpServer
         static void Main(string[] args)
         {
             var logger = new ConsoleLogger();
-            var server = new Server(logger, 8080);
+            var handler = new HttpRequestHandler(logger);
+            var server = new Server(handler, logger);
 
             server.Start();
             while (server.IsRunning)
