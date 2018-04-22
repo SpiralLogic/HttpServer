@@ -1,28 +1,32 @@
-﻿using System;
-using HttpServer.Loggers;
-using static System.String;
+﻿using System.IO;
+using HttpServer.RequestHandlers.ResponseCodes;
 
 namespace HttpServer.RequestHandlers
 {
-    internal class HttpRequestHandler : IRequestHandler
+    public class HttpRequestHandler : IRequestHandler
     {
         private HttpRequestParser _requestParser;
-        private readonly ILogger _logger;
+        private string _root;
 
-        public HttpRequestHandler(ILogger logger)
+        public HttpRequestHandler(string publicRoot = null)
         {
-            _logger = logger ?? throw new ArgumentException(nameof(logger));
             _requestParser = new HttpRequestParser();
+            _root = publicRoot ?? Directory.GetCurrentDirectory();
         }
 
-        public string HandleRequest(string request)
+        public HttpRequest ParseRequest(string request)
         {
-            _logger.Log(request);
-            return "Wawa";
+            return _requestParser.Parse(request);
         }
-    }
 
-    internal class HttpRequestParser
-    {
+        public string CreateResponse(HttpRequest request)
+        {
+            if (Directory.Exists(request.Resource))
+            {
+                return new Response(new Success()).ToString();
+            }
+
+            return new Response(new NotFound()).ToString();
+        }
     }
 }

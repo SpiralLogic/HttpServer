@@ -1,7 +1,11 @@
-﻿namespace HttpServer.RequestHandlers
+﻿using System;
+
+namespace HttpServer.RequestHandlers
 {
     public interface IRequestHandler
     {
-        string HandleRequest(string request);
+        HttpRequest ParseRequest(string request);
+
+        string CreateResponse(HttpRequest request);
     }
 }

@@ -90,7 +90,7 @@ namespace HttpServerTest
             using (var server = new Server(handler, logger))
             {
                 server.Start();
-                Assert.Throws<ArgumentException>(() => server.Port = testPort);
+                Assert.Throws<ApplicationException>(() => server.Port = testPort);
             }
         }
     }

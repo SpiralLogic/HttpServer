@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Text;
 using HttpServer.Listeners;
@@ -11,7 +12,6 @@ namespace HttpServer
     {
         private readonly ILogger _logger;
         private readonly IListener _listener;
-        private readonly IRequestHandler _handler;
 
         public Encoding Encoding => _listener.Encoding;
         public bool IsRunning => _listener.IsListening;
@@ -19,15 +19,15 @@ namespace HttpServer
         public Server(IRequestHandler handler, ILogger logger)
         {
             _logger = logger;
-            _handler = handler;
-            _listener = new TcpListener(_handler, IPAddress.Loopback);
-        }
+            _listener = new TcpListener(handler, IPAddress.Loopback);
+            }
 
         public int Port
         {
             get => _listener.Port;
             set => _listener.Port = value;
         }
+
 
         public void Start()
         {

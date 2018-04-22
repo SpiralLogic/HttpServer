@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using HttpServer;
 using Xunit;
 
@@ -9,34 +10,31 @@ namespace HttpServerTest
     public class ServerRequestTests
     {
         private readonly Server _server;
-        private readonly TestLogger _logger;
-        private TestRequestHandler _handler;
+        private readonly TestRequestHandler _handler;
+        private readonly ManualResetEventSlim _requestReceivedEvent;
         
         public ServerRequestTests()
         {
+            _requestReceivedEvent = new ManualResetEventSlim(false);
+            
             _handler = new TestRequestHandler();
-            _logger = new TestLogger();
-            _server = new Server(_handler, _logger);
+            _handler.RequestRecievedEvent += (o,a) => _requestReceivedEvent.Set();
+            
+            var logger = new TestLogger();
+            _server = new Server(_handler, logger);
+            
+            _server.Start();
         }
 
         [Fact]
         public void CanReceiveRequests()
         {
             const string requestString = "TEST";
-            _server.Start();
 
-            _logger.LogWrittenEvent += (o, a) => Assert.Equal(requestString, _logger.LastMessage);
             SimulateRequest(_server.Port, _server.Encoding, requestString);
-        }
+            _requestReceivedEvent.Wait(1000);
 
-        [Fact]
-        public void CanRecieveGetRequests()
-        {
-            const string requestString = "GET / HTTP/1.1\n";
-            _server.Start();
-
-            _logger.LogWrittenEvent += (o, a) => Assert.Equal(requestString, _logger.LastMessage);
-            SimulateRequest(_server.Port, _server.Encoding, requestString);
+            Assert.Equal(requestString, _handler.RequestString);
         }
 
         private string SimulateRequest(int port, Encoding encoding, string messageString)

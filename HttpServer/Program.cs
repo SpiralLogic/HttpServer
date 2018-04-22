@@ -8,9 +8,9 @@ namespace HttpServer
         static void Main(string[] args)
         {
             var logger = new ConsoleLogger();
-            var handler = new HttpRequestHandler(logger);
+            var handler = new HttpRequestHandler();
             var server = new Server(handler, logger);
-
+            server.Port = 5000;
             server.Start();
             while (server.IsRunning)
             {
