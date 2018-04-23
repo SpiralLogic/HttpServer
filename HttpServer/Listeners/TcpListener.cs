@@ -113,7 +113,7 @@ namespace HttpServer.Listeners
         {
             var request = _requestHandler.ParseRequest(data);
             var response = _requestHandler.CreateResponse(request);
-            var result = Encoding.GetBytes(response);
+            var result = Encoding.GetBytes(response.ToString());
 
             clientStream.Write(result, 0, result.Length);
         }

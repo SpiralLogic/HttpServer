@@ -1,5 +1,6 @@
 using System;
 using HttpServer.RequestHandlers;
+using HttpServer.RequestHandlers.ResponseCodes;
 
 namespace HttpServerTest
 {
@@ -16,9 +17,9 @@ namespace HttpServerTest
             return new TestHttpRequest();
         }
 
-        public string CreateResponse(HttpRequest request)
+        public Response CreateResponse(HttpRequest request)
         {
-            return "Good";            
+            return new Response(new TestStatusCode());
         }
     }
 
@@ -27,5 +28,11 @@ namespace HttpServerTest
         public TestHttpRequest() : base(RequestType.GET, "/", HttpVersion.Version11)
         {
         }
+    }
+
+    internal class TestStatusCode : IHttpStatusCode
+    {
+        public int Code { get; } = 200;
+        public string Status { get; } = "yes";
     }
 }

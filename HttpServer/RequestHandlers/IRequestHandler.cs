@@ -6,6 +6,6 @@ namespace HttpServer.RequestHandlers
     {
         HttpRequest ParseRequest(string request);
 
-        string CreateResponse(HttpRequest request);
+        Response CreateResponse(HttpRequest request);
     }
 }

@@ -9,7 +9,8 @@ namespace HttpServerTest
 
         public HttpRequestHandlerTests()
         {
-            _handler = new HttpRequestHandler();
+            var logger = new TestLogger();
+            _handler = new HttpRequestHandler(logger);
         }
 
         [Fact]

@@ -20,14 +20,13 @@ namespace HttpServer
         {
             _logger = logger;
             _listener = new TcpListener(handler, IPAddress.Loopback);
-            }
+        }
 
         public int Port
         {
             get => _listener.Port;
             set => _listener.Port = value;
         }
-
 
         public void Start()
         {

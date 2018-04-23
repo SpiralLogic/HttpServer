@@ -1,17 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using HttpServer.Loggers;
 using HttpServer.RequestHandlers.ResponseCodes;
 
 namespace HttpServer.RequestHandlers
 {
     public class HttpRequestHandler : IRequestHandler
     {
-        private HttpRequestParser _requestParser;
+        private readonly HttpRequestParser _requestParser;
         private string _root;
+        private ILogger _logger;
+        private const string DefaultPublicRoot = "wwwroot";
 
-        public HttpRequestHandler(string publicRoot = null)
+        public HttpRequestHandler(ILogger logger, string publicRoot = null)
         {
             _requestParser = new HttpRequestParser();
-            _root = publicRoot ?? Directory.GetCurrentDirectory();
+            _root = publicRoot ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultPublicRoot);
+            _logger = logger;
         }
 
         public HttpRequest ParseRequest(string request)
@@ -19,14 +24,33 @@ namespace HttpServer.RequestHandlers
             return _requestParser.Parse(request);
         }
 
-        public string CreateResponse(HttpRequest request)
+        public Response CreateResponse(HttpRequest request)
         {
-            if (Directory.Exists(request.Resource))
+            var directory = Path.Combine(_root, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            var filename = Path.GetFileName(directory);
+
+            if (ResourceNotFound(directory, filename))
             {
-                return new Response(new Success()).ToString();
+                return new Response(new NotFound());
             }
 
-            return new Response(new NotFound()).ToString();
+            return CreateSuccessResponse(directory, filename);
+        }
+
+        private bool ResourceNotFound(string directory, string filename)
+        {
+            return !Directory.Exists(directory) || Directory.Exists(directory) && !string.IsNullOrEmpty(filename) && !File.Exists(filename);
+        }
+
+        private Response CreateSuccessResponse(string directory, string filename)
+        {
+            var response = new Response(new Success());
+            if (Directory.Exists(directory) && string.IsNullOrEmpty(filename))
+            {
+                response.Body = string.Join("<br>", Directory.GetFiles(directory));
+            }
+
+            return response;
         }
     }
 }
