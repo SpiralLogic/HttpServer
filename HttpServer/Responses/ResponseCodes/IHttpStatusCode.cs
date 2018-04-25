@@ -1,4 +1,4 @@
-﻿namespace HttpServer.RequestHandlers.ResponseCodes
+﻿namespace HttpServer.Responses.ResponseCodes
 {
     public interface IHttpStatusCode
     {

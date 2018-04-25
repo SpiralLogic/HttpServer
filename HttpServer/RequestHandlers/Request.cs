@@ -2,13 +2,13 @@
 
 namespace HttpServer.RequestHandlers
 {
-    public class HttpRequest
+    public class Request
     {
         public RequestType Type { get; }
         public string Resource { get; }
         public Version Version { get; }
 
-        public HttpRequest(RequestType type, string resource, Version version)
+        public Request(RequestType type, string resource, Version version)
         {
             Type = type;
             Resource = resource;

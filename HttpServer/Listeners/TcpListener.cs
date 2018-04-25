@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 
 namespace HttpServer.Listeners
@@ -14,19 +15,19 @@ namespace HttpServer.Listeners
         private const uint LargestPort = 65535;
 
         private readonly IPAddress _ipAddress;
-        private readonly IRequestHandler _requestHandler;
 
         private int _port;
         private System.Net.Sockets.TcpListener _tcpSocketListener;
         private CancellationTokenSource _cancellationTokenSource;
+        private Func<string, Response> _handleFunction;
 
         public Encoding Encoding { get; } = Encoding.UTF8;
         public bool IsListening { get; private set; }
 
-        public TcpListener(IRequestHandler requestHandler, IPAddress ipAddress = null, int port = 0)
+        public TcpListener(Func<string, Response> handleFunction, IPAddress ipAddress = null, int port = 0)
         {
-            _requestHandler = requestHandler ?? throw new ArgumentException(nameof(requestHandler));
             _ipAddress = ipAddress ?? IPAddress.Loopback;
+            _handleFunction = handleFunction;
             _port = port;
         }
 
@@ -111,8 +112,7 @@ namespace HttpServer.Listeners
 
         private void RespondToRequest(string data, Stream clientStream)
         {
-            var request = _requestHandler.ParseRequest(data);
-            var response = _requestHandler.CreateResponse(request);
+            var response = _handleFunction(data);
             var result = Encoding.GetBytes(response.ToString());
 
             clientStream.Write(result, 0, result.Length);

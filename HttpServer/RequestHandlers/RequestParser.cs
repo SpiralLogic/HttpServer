@@ -5,9 +5,9 @@ using System.Text.RegularExpressions;
 
 namespace HttpServer.RequestHandlers
 {
-    internal class HttpRequestParser
+    internal class RequestParser
     {
-        public HttpRequest Parse(string requestString)
+        public Request Parse(string requestString)
         {
             var lines = Regex.Split(requestString, "\r\n|\r|\n");
             var firstRequestLine = lines.First().Split();
@@ -16,7 +16,7 @@ namespace HttpServer.RequestHandlers
             var resource = firstRequestLine[1];
             var httpVersion = HttpVersionFromString(firstRequestLine[2]);
 
-            return new HttpRequest(type, resource, httpVersion);
+            return new Request(type, resource, httpVersion);
         }
 
         private RequestType RequestTypeFromString(string type)

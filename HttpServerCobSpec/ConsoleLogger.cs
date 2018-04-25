@@ -1,6 +1,7 @@
 ﻿using System;
+using HttpServer.Loggers;
 
-namespace HttpServer.Loggers
+namespace HttpServerCobSpec
 {
     internal class ConsoleLogger : ILogger
     {

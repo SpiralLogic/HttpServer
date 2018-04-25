@@ -6,92 +6,64 @@ namespace HttpServerTest
 {
     public class ServerTests
     {
+        private readonly Server _server;
+
+        public ServerTests()
+        {
+            var logger = new TestLogger();
+            _server = new Server(new Router(), logger);
+        }
+
         [Fact]
         public void HttpServerCanStart()
         {
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                server.Start();
-                Assert.True(server.IsRunning);
-            }
+            _server.Start();
+            Assert.True(_server.IsRunning);
         }
 
         [Fact]
         public void HttpServerCantStartTwice()
         {
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                server.Start();
-                Assert.Throws<ApplicationException>(() => server.Start());
-            }
+            _server.Start();
+            Assert.Throws<ApplicationException>(() => _server.Start());
         }
 
         [Fact]
         public void HttpServerCanStop()
         {
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                server.Start();
-                server.Stop();
-                Assert.False(server.IsRunning);
-            }
+            _server.Start();
+            _server.Stop();
+            Assert.False(_server.IsRunning);
         }
 
         [Fact]
         public void PortCantBeTooLarge()
         {
             const int testPort = 65536;
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                Assert.Throws<ArgumentException>(() => server.Port = testPort);
-            }
+            Assert.Throws<ArgumentException>(() => _server.Start(testPort));
         }
 
         [Fact]
         public void PortCantBeLessThanZero()
         {
             const int testPort = -1;
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                Assert.Throws<ArgumentException>(() => server.Port = testPort);
-            }
+            Assert.Throws<ArgumentException>(() => _server.Start(testPort));
         }
 
         [Fact]
         public void CanListenOnSpecifiedPort()
         {
             const int testPort = 8765;
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                server.Port = testPort;
-                server.Start();
-                Assert.Equal(testPort, server.Port);
-            }
+            _server.Start(testPort);
+            Assert.Equal(testPort, _server.Port);
         }
-        
+
         [Fact]
         public void WhenServerIsRunningCantChangePort()
         {
             const int testPort = 8765;
-            var handler = new TestRequestHandler();
-            var logger = new TestLogger();
-            using (var server = new Server(handler, logger))
-            {
-                server.Start();
-                Assert.Throws<ApplicationException>(() => server.Port = testPort);
-            }
+            _server.Start();
+            Assert.Throws<ApplicationException>(() => _server.Start(testPort));
         }
     }
 }

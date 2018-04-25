@@ -1,4 +1,6 @@
-﻿namespace HttpServer.RequestHandlers.ResponseCodes
+﻿using HttpServer.Responses.ResponseCodes;
+
+namespace HttpServer.RequestHandlers.ResponseCodes
 {
     internal class Success : IHttpStatusCode
     {

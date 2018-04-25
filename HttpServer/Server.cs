@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using HttpServer.Handlers;
 using HttpServer.Listeners;
 using HttpServer.Loggers;
 using HttpServer.RequestHandlers;
@@ -12,26 +13,24 @@ namespace HttpServer
     {
         private readonly ILogger _logger;
         private readonly IListener _listener;
+        private readonly Router _router;
 
         public Encoding Encoding => _listener.Encoding;
         public bool IsRunning => _listener.IsListening;
 
-        public Server(IRequestHandler handler, ILogger logger)
+        public Server(Router router, ILogger logger)
         {
-            _logger = logger;
-            _listener = new TcpListener(handler, IPAddress.Loopback);
+            _logger = logger ?? throw new ArgumentException(nameof(logger));
+            _router = router ?? throw new ArgumentException(nameof(router));
+            _listener = new TcpListener(_routeRequest, IPAddress.Loopback);
         }
 
-        public int Port
-        {
-            get => _listener.Port;
-            set => _listener.Port = value;
-        }
+        public int Port => _listener.Port;
 
-        public void Start()
+        public void Start(int port = 0)
         {
             if (_listener.IsListening) throw new ApplicationException("Server is already running");
-
+            _listener.Port = port;
             _listener.Start();
             _logger.Log("Waiting for connection on port: " + _listener.Port);
         }
@@ -39,6 +38,11 @@ namespace HttpServer
         public void Stop()
         {
             if (_listener.IsListening) _listener.Stop();
+        }
+
+        private Response _routeRequest(string request)
+        {
+            return _router.CreateResponse(request);
         }
 
         public void Dispose()
