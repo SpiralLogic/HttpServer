@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses.ResponseCodes;
 
@@ -36,10 +37,24 @@ namespace HttpServer.Handlers
         private Response CreateSuccessResponse(string directory)
         {
             var response = new Response(new Success());
-            
-            response.Body = string.Join("<br>", Directory.GetFiles(directory));
+            var responseBody = string.Empty;
+
+            var directories = Directory.GetFileSystemEntries(directory).Select(GetFileNameAsLink);
+            responseBody += string.Join("<br>", directories);
+
+            response.Body = WrapInHtml(responseBody);
 
             return response;
+        }
+
+        private static string GetFileNameAsLink(string file)
+        {
+            return $"<a href=\"/{Path.GetFileName(file)}\">{Path.GetFileName(file)}</a>";
+        }
+
+        private string WrapInHtml(string body)
+        {
+            return $"<html><body>{body}</body></html>";
         }
     }
 }

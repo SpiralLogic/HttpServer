@@ -65,5 +65,10 @@ namespace HttpServerTest
             _server.Start();
             Assert.Throws<ApplicationException>(() => _server.Start(testPort));
         }
+
+        ~ServerTests()
+        {
+            _server.Dispose();
+        }
     }
 }

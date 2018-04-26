@@ -29,6 +29,8 @@ namespace HttpServerCobSpec
             var router = new Router();
             
             router.AddRoute(RequestType.GET, "/", new DirectoryHandler());
+            router.AddRoute(RequestType.POST, "/form", new FormHandler());
+            router.AddRoute(RequestType.PUT, "/put-target", new FormHandler());
 
             return router;
         }
