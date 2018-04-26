@@ -1,26 +1,24 @@
 ﻿using System;
 using System.IO;
 using HttpServer.RequestHandlers;
-using HttpServer.RequestHandlers.ResponseCodes;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
-    public class FileRequestHandler : IRequestHandler
+    public class FileHandler : IRequestHandler
     {
         private readonly string _directory;
-        private readonly Request _request;
         private const string DefaultDirectory = "wwwroot";
 
-        public FileRequestHandler(Request request, string directory = null)
+        public FileHandler(string directory = null)
         {
-            _request = request ?? throw new ArgumentException(nameof(request));
             _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
         }
 
-        public Response CreateResponse()
+        public Response Handle(Request request)
         {
-            var directory = Path.Combine(_directory, _request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            request = request ?? throw new ArgumentException(nameof(request));
+            var directory = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
             var filename = Path.GetFileName(directory);
 
             if (ResourceNotFound(directory, filename))

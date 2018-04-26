@@ -1,5 +1,4 @@
 ﻿using System;
-using HttpServer.RequestHandlers.ResponseCodes;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.RequestHandlers
@@ -14,6 +13,10 @@ namespace HttpServer.RequestHandlers
         {
             _version = version ?? HttpVersion.Version11;
             _statusCode = statusCode;
+        }
+
+        internal Response(Response response) : this(response._statusCode, response._version)
+        {
         }
 
         public string Body { get; set; }

@@ -1,6 +1,4 @@
-﻿using HttpServer.RequestHandlers.ResponseCodes;
-
-namespace HttpServer.Responses.ResponseCodes
+﻿namespace HttpServer.Responses.ResponseCodes
 {
     public class NotFound : IHttpStatusCode
     {

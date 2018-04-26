@@ -4,6 +4,6 @@ namespace HttpServer.Handlers
 {
     public interface IRequestHandler
     {
-        Response CreateResponse();
+        Response Handle(Request request);
     }
 }

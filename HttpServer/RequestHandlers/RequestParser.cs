@@ -13,7 +13,7 @@ namespace HttpServer.RequestHandlers
             var firstRequestLine = lines.First().Split();
 
             var type = RequestTypeFromString(firstRequestLine[0]);
-            var resource = firstRequestLine[1];
+            var resource = type == RequestType.UNKNOWN ? null : firstRequestLine[1];
             var httpVersion = HttpVersionFromString(firstRequestLine[2]);
 
             return new Request(type, resource, httpVersion);

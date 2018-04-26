@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using HttpServer.RequestHandlers;
-using HttpServer.RequestHandlers.ResponseCodes;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
@@ -9,19 +8,17 @@ namespace HttpServer.Handlers
     public class DirectoryHandler : IRequestHandler
     {
         private const string DefaultDirectory = "wwwroot";
-
-        private readonly Request _request;
         private readonly string _directory;
 
-        public DirectoryHandler(Request request, string publicRoot = null)
+        public DirectoryHandler(string publicRoot = null)
         {
-            _request = request ?? throw new ArgumentException(nameof(request));
             _directory = publicRoot ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
         }
 
-        public Response CreateResponse()
+        public Response Handle(Request request)
         {
-            var directory = Path.Combine(_directory, _request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            request = request ?? throw new ArgumentException(nameof(request));
+            var directory = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
 
             if (ResourceNotFound(directory))
             {
