@@ -5,13 +5,13 @@ namespace HttpServer.RequestHandlers
     public class Request
     {
         public RequestType Type { get; }
-        public string Resource { get; }
+        public string Path { get; }
         public Version Version { get; }
 
-        public Request(RequestType type, string resource, Version version)
+        public Request(RequestType type, string path, Version version)
         {
             Type = type;
-            Resource = resource;
+            Path = path;
             Version = version;
         }
     }

@@ -7,6 +7,6 @@
         HEAD,
         POST,
         PUT,
-        OPTION
+        OPTIONS
     }
 }

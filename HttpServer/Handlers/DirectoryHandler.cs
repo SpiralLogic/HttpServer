@@ -19,7 +19,7 @@ namespace HttpServer.Handlers
         public Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
-            var directory = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            var directory = Path.Combine(_directory, request.Path.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
 
             if (ResourceNotFound(directory))
             {

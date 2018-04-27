@@ -32,6 +32,12 @@ namespace HttpServerCobSpec
             router.AddRoute(RequestType.POST, "/form", new FormHandler());
             router.AddRoute(RequestType.PUT, "/put-target", new FormHandler());
 
+            router.AddRoute(RequestType.GET, "/method_options", new FormHandler());
+            router.AddRoute(RequestType.PUT, "/method_options", new FormHandler());
+            router.AddRoute(RequestType.POST, "/method_options", new FormHandler());
+
+            router.AddRoute(RequestType.GET, "/method_options2", new FormHandler());
+
             return router;
         }
     }

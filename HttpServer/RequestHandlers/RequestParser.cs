@@ -27,8 +27,8 @@ namespace HttpServer.RequestHandlers
                     return RequestType.GET;
                 case "HEAD":
                     return RequestType.HEAD;
-                case "OPTION":
-                    return RequestType.OPTION;
+                case "OPTIONS":
+                    return RequestType.OPTIONS;
                 case "POST":
                     return RequestType.POST;
                 case "PUT":
