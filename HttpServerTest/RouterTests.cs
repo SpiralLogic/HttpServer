@@ -46,8 +46,8 @@ namespace HttpServerTest
 
             await _testClient.GetStringAsync(_uri);
 
+            Assert.Equal(Path, _testHandler.LastRequest.Resource);
             Assert.Equal(RequestType.GET, _testHandler.LastRequest.Type);
-            Assert.Equal(Path, _testHandler.LastRequest.Path);
         }
 /*
 

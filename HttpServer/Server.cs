@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Text;
-using HttpServer.Handlers;
 using HttpServer.Listeners;
 using HttpServer.Loggers;
 using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 
 namespace HttpServer
 {
@@ -30,6 +29,7 @@ namespace HttpServer
         public void Start(int port = 0)
         {
             if (_listener.IsListening) throw new ApplicationException("Server is already running");
+            
             _listener.Port = port;
             _listener.Start();
             _logger.Log("Waiting for connection on port: " + _listener.Port);
@@ -42,10 +42,10 @@ namespace HttpServer
 
         private Response _routeRequest(string request)
         {
-            _logger.Log(request);
+            _logger?.Log(request);
             var response = _router.CreateResponse(request);
             
-            _logger.Log(response.ToString());
+            _logger?.Log(response.ToString());
 
             return response;
         }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System.Collections.Generic;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer
@@ -34,18 +33,19 @@ namespace HttpServer
         internal Response CreateResponse(string requestData)
         {
             var request = _requestParser.Parse(requestData);
-
+         
             if (request.Type == RequestType.HEAD)
             {
                 return CreateHeadResponse(request);
             }
-
+            
             if (request.Type == RequestType.UNKNOWN)
             {
                 return BadRequestResponse;
             }
 
-            if (_handlers.TryGetValue((request.Type, request.Path), out var requestHandler))
+
+            if (_handlers.TryGetValue((request.Type, request.Resource), out var requestHandler))
             {
                 return requestHandler.Handle(request);
             }
@@ -74,7 +74,7 @@ namespace HttpServer
 
         private Response CreateHeadResponse(Request request)
         {
-            if (_handlers.TryGetValue((RequestType.GET, request.Path), out var requestHandler))
+            if (_handlers.TryGetValue((RequestType.GET, request.Resource), out var requestHandler))
             {
                 var response = requestHandler.Handle(request);
                 response.Body = string.Empty;

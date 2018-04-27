@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
@@ -19,14 +20,15 @@ namespace HttpServer.Handlers
         public Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
-            var directory = Path.Combine(_directory, request.Path.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
 
-            if (ResourceNotFound(directory))
+            var directoryPath = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+
+            if (ResourceNotFound(directoryPath))
             {
                 return new Response(new NotFound());
             }
 
-            return CreateSuccessResponse(directory);
+            return CreateSuccessResponse(directoryPath);
         }
 
         private bool ResourceNotFound(string directory)
@@ -37,10 +39,9 @@ namespace HttpServer.Handlers
         private Response CreateSuccessResponse(string directory)
         {
             var response = new Response(new Success());
-            var responseBody = string.Empty;
 
             var directories = Directory.GetFileSystemEntries(directory).Select(GetFileNameAsLink);
-            responseBody += string.Join("<br>", directories);
+            var responseBody = string.Join("<br>", directories);
 
             response.Body = WrapInHtml(responseBody);
 

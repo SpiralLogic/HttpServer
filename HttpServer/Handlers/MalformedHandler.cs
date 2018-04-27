@@ -1,4 +1,5 @@
 ﻿using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers

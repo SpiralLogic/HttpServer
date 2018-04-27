@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
@@ -18,7 +19,8 @@ namespace HttpServer.Handlers
         public Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
-            var directory = Path.Combine(_directory, request.Path.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            
+            var directory = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
             var filename = Path.GetFileName(directory);
 
             if (ResourceNotFound(directory, filename))

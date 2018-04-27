@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
+using HttpServer.RequestHandlers;
 using HttpServer.Responses.ResponseCodes;
 
-namespace HttpServer.RequestHandlers
+namespace HttpServer.Responses
 {
     public class Response
     {
@@ -19,17 +19,13 @@ namespace HttpServer.RequestHandlers
             _statusCode = statusCode;
         }
 
-        internal Response(Response response) : this(response._statusCode, response._version)
-        {
-        }
-
         public string Body { get; set; }
 
         public void AddHeader(string feild, string value)
         {
             _headers.Add((feild, value));
         }
-        
+
         public override string ToString()
         {
             return MakeStatusLine()
@@ -51,8 +47,12 @@ namespace HttpServer.RequestHandlers
 
         private string MakeBody()
         {
+            if (string.IsNullOrEmpty(Body))
+            {
+                return CrLf;
+            }
+
             return CrLf + CrLf + Body;
         }
-
     }
 }

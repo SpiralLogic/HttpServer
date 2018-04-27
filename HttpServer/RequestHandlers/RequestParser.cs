@@ -1,22 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 
 namespace HttpServer.RequestHandlers
 {
     internal class RequestParser
     {
+        private Request BadRequest => new Request(RequestType.UNKNOWN, string.Empty, string.Empty, new Version());
+        
         public Request Parse(string requestString)
         {
             var lines = Regex.Split(requestString, "\r\n|\r|\n");
-            var firstRequestLine = lines.First().Split();
+            var requestLineSubStrings = lines.First().Split();
 
-            var type = RequestTypeFromString(firstRequestLine[0]);
-            var resource = type == RequestType.UNKNOWN ? null : firstRequestLine[1];
-            var httpVersion = HttpVersionFromString(firstRequestLine[2]);
+            if (requestLineSubStrings.Length != 3)
+            {
+                return BadRequest;
+            }
+            
+            return BuildRequest(requestLineSubStrings);
+        }
 
-            return new Request(type, resource, httpVersion);
+        private Request BuildRequest(IReadOnlyList<string> requestLineSubStrings)
+        {
+            var requestBuilder = new RequestBuilder
+            {
+                Type = RequestTypeFromString(requestLineSubStrings[0]),
+                Resource = requestLineSubStrings[1],
+            Endpoint = EndpointFrom(requestLineSubStrings[1]),
+                HttpVersion = HttpVersionFromString(requestLineSubStrings[2])
+            };
+
+            return requestBuilder.Request;
         }
 
         private RequestType RequestTypeFromString(string type)
@@ -38,7 +54,17 @@ namespace HttpServer.RequestHandlers
             }
         }
 
-        private Version HttpVersionFromString(string type)
+        private static string EndpointFrom(string resource)
+        {
+            return resource.Split('/').Last();
+        }
+        
+        private static string CreatePath(string resource, string endpoint)
+        {
+            return "/";
+        }
+
+        private static Version HttpVersionFromString(string type)
         {
             switch (type)
             {

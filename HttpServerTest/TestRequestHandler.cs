@@ -1,6 +1,7 @@
 using System;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
+using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServerTest
@@ -21,7 +22,7 @@ namespace HttpServerTest
 
     internal class TestRequest : Request
     {
-        public TestRequest() : base(RequestType.GET, "/", HttpVersion.Version11)
+        public TestRequest() : base(RequestType.GET, "/", string.Empty, HttpVersion.Version11)
         {
         }
     }
