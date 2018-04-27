@@ -11,18 +11,25 @@ namespace HttpServer.Handlers
     {
         private const string DefaultDirectory = "wwwroot";
         private readonly string _directory;
+        private readonly FileHandler _fileHandler;
 
-        public DirectoryHandler(string publicRoot = null)
+        public DirectoryHandler(string directory = null)
         {
-            _directory = publicRoot ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
+            _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
+            _fileHandler = new FileHandler(directory);
         }
 
         public Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
 
-            var directoryPath = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
+            var directoryPath = Path.Combine(_directory, request.Resource.TrimStart('/'));
 
+            if (request.IsEndpoint)
+            {
+                return _fileHandler.Handle(request);
+            }
+            
             if (ResourceNotFound(directoryPath))
             {
                 return new Response(new NotFound());

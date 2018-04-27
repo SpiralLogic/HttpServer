@@ -49,7 +49,7 @@ namespace HttpServerTest
             Assert.Equal(Path, _testHandler.LastRequest.Resource);
             Assert.Equal(RequestType.GET, _testHandler.LastRequest.Type);
         }
-/*
+
 
         [Fact]
         public async Task CanCreatePostRoute()
@@ -61,7 +61,6 @@ namespace HttpServerTest
             Assert.Equal(RequestType.POST, _testHandler.LastRequest.Type);
             Assert.Equal(Path, _testHandler.LastRequest.Path);
         }
-*/
 
         [Fact]
         public async Task HeadRequestHasNoBody()

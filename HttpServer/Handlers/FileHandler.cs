@@ -19,9 +19,9 @@ namespace HttpServer.Handlers
         public Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
-            
-            var directory = Path.Combine(_directory, request.Resource.TrimStart(Path.DirectorySeparatorChar)) + Path.DirectorySeparatorChar;
-            var filename = Path.GetFileName(directory);
+
+            var directory = Path.Combine(_directory, request.Resource.TrimStart('/'));
+            var filename = Path.Combine(directory, request.Endpoint);
 
             if (ResourceNotFound(directory, filename))
             {
@@ -42,12 +42,12 @@ namespace HttpServer.Handlers
             try
             {
                 response.Body = File.ReadAllText(Path.Combine(directory, filename));
-
             }
             catch (IOException)
             {
-             return new Response(new NotImplemented());   
+                return new Response(new NotImplemented());
             }
+
             return response;
         }
     }

@@ -20,7 +20,7 @@ namespace HttpServer.Listeners
         private int _port;
         private System.Net.Sockets.TcpListener _tcpSocketListener;
         private CancellationTokenSource _cancellationTokenSource;
-        private Func<string, Response> _handleFunction;
+        private readonly Func<string, Response> _handleFunction;
 
         public Encoding Encoding { get; } = Encoding.UTF8;
         public bool IsListening { get; private set; }
