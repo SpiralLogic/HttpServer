@@ -9,15 +9,15 @@ namespace HttpServer.RequestHandlers
         public string Resource { get; }
         public string Endpoint { get; }
         public string Path { get; }
-        public bool IsEndpoint => string.IsNullOrEmpty(Endpoint);
+        public bool IsEndpoint => !string.IsNullOrEmpty(Endpoint);
 
         public Request(RequestType type, string resource, string endpoint, Version version)
         {
             Type = type;
             Resource = resource;
-            Path = MakePathFrom(resource);
-            Version = version;
             Endpoint = endpoint;
+            Version = version;
+            Path = MakePathFrom(resource);
         }
 
         public override string ToString()
@@ -32,7 +32,7 @@ namespace HttpServer.RequestHandlers
                 return resource + "/";
             }
 
-            return Resource.Remove(Resource.LastIndexOf(Endpoint, StringComparison.Ordinal)) + "/";
+            return Resource.Remove(Resource.LastIndexOf(Endpoint, StringComparison.Ordinal));
         }
     }
 }

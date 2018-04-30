@@ -20,7 +20,7 @@ namespace HttpServer.Handlers
         {
             request = request ?? throw new ArgumentException(nameof(request));
 
-            var directory = Path.Combine(_directory, request.Resource.TrimStart('/'));
+            var directory = Path.Combine(_directory, request.Path.TrimStart('/'));
             var filename = Path.Combine(directory, request.Endpoint);
 
             if (ResourceNotFound(directory, filename))
@@ -38,17 +38,16 @@ namespace HttpServer.Handlers
 
         private Response CreateSuccessResponse(string directory, string filename)
         {
-            var response = new Response(new Success());
             try
             {
+                var response = new Response(new Success());
                 response.Body = File.ReadAllText(Path.Combine(directory, filename));
+                return response;
             }
             catch (IOException)
             {
                 return new Response(new NotImplemented());
             }
-
-            return response;
         }
     }
 }

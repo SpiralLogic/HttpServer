@@ -8,7 +8,7 @@ namespace HttpServer.RequestHandlers
     internal class RequestParser
     {
         private Request BadRequest => new Request(RequestType.UNKNOWN, string.Empty, string.Empty, new Version());
-        
+
         public Request Parse(string requestString)
         {
             var lines = Regex.Split(requestString, "\r\n|\r|\n");
@@ -18,7 +18,7 @@ namespace HttpServer.RequestHandlers
             {
                 return BadRequest;
             }
-            
+
             return BuildRequest(requestLineSubStrings);
         }
 
@@ -28,7 +28,7 @@ namespace HttpServer.RequestHandlers
             {
                 Type = RequestTypeFromString(requestLineSubStrings[0]),
                 Resource = requestLineSubStrings[1],
-            Endpoint = EndpointFrom(requestLineSubStrings[1]),
+                Endpoint = EndpointFrom(requestLineSubStrings[1]),
                 HttpVersion = HttpVersionFromString(requestLineSubStrings[2])
             };
 
@@ -56,9 +56,10 @@ namespace HttpServer.RequestHandlers
 
         private static string EndpointFrom(string resource)
         {
-            return resource.Split('/').Last();
+            var split = resource.Split('/');
+            return split.Last();
         }
-        
+
         private static string CreatePath(string resource, string endpoint)
         {
             return "/";

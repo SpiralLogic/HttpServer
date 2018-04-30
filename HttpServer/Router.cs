@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
@@ -16,6 +17,8 @@ namespace HttpServer
         private readonly IDictionary<string, IList<RequestType>> _pathOptions
             = new Dictionary<string, IList<RequestType>>();
 
+        private readonly ISet<string> _directoryRoutes = new HashSet<string>();
+
         private static Response NotFoundResponse => new Response(new NotFound());
         private static Response BadRequestResponse => new Response(new BadRequest());
 
@@ -30,29 +33,49 @@ namespace HttpServer
             AddPathOptions(requestType, path);
         }
 
+        public void AddDirectoryRoute(RequestType requestType, string path, IRequestHandler requestHandler)
+        {
+            _directoryRoutes.Add(path);
+            AddRoute(requestType, path, requestHandler);
+        }
+
         internal Response CreateResponse(string requestData)
         {
             var request = _requestParser.Parse(requestData);
-         
+
             if (request.Type == RequestType.HEAD)
             {
                 return CreateHeadResponse(request);
             }
-            
+
             if (request.Type == RequestType.UNKNOWN)
             {
                 return BadRequestResponse;
             }
 
-
-            if (_handlers.TryGetValue((request.Type, request.Resource), out var requestHandler))
+            if (HasRequestHandler(request, out var requestHandler))
             {
-                return requestHandler.Handle(request);
+                return requestHandler?.Handle(request);
+            }
+
+            if (HadDirectoryHandler(request, out var directoryRequestHandler))
+            {
+                return directoryRequestHandler?.Handle(request);
             }
 
             return NotFoundResponse;
         }
-        
+
+        private bool HasRequestHandler(Request request, out IRequestHandler requestHandler)
+        {
+            return _handlers.TryGetValue((request.Type, request.Resource), out requestHandler);
+        }
+
+        private bool HadDirectoryHandler(Request request, out IRequestHandler directoryRequestHandler)
+        {
+            return _handlers.TryGetValue((request.Type, request.Path), out directoryRequestHandler) && _directoryRoutes.Contains(request.Path);
+        }
+
         private void AddPathOptions(RequestType requestType, string path)
         {
             if (!_pathOptions.TryGetValue(path, out var requestTypes))
@@ -63,12 +86,12 @@ namespace HttpServer
 
             requestTypes.Add(RequestType.OPTIONS);
             requestTypes.Add(requestType);
-            
+
             if (requestType == RequestType.GET)
             {
                 requestTypes.Add(RequestType.HEAD);
             }
-            
+
             _handlers.TryAdd((RequestType.OPTIONS, path), new OptionsHandler(requestTypes));
         }
 

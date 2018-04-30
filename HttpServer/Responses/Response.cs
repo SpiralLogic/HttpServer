@@ -12,11 +12,13 @@ namespace HttpServer.Responses
         private readonly Version _version;
         private readonly IHttpStatusCode _statusCode;
         private readonly IList<(string feild, string value)> _headers = new List<(string, string)>();
+        public Request Request { get; }
 
-        public Response(IHttpStatusCode statusCode, Version version = null)
+        public Response(IHttpStatusCode statusCode, Version version = null, Request request=null)
         {
             _version = version ?? HttpVersion.Version11;
             _statusCode = statusCode;
+            Request = request;
         }
 
         public string Body { get; set; }
@@ -52,7 +54,7 @@ namespace HttpServer.Responses
                 return CrLf;
             }
 
-            return CrLf + CrLf + Body;
+            return CrLf + Body;
         }
     }
 }

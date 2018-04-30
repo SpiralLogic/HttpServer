@@ -16,7 +16,7 @@ namespace HttpServer.Handlers
         public DirectoryHandler(string directory = null)
         {
             _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
-            _fileHandler = new FileHandler(directory);
+            _fileHandler = new FileHandler(_directory);
         }
 
         public Response Handle(Request request)
@@ -29,7 +29,7 @@ namespace HttpServer.Handlers
             {
                 return _fileHandler.Handle(request);
             }
-            
+
             if (ResourceNotFound(directoryPath))
             {
                 return new Response(new NotFound());
