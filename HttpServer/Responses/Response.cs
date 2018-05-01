@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Text;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses.ResponseCodes;
 
@@ -14,7 +16,7 @@ namespace HttpServer.Responses
         private readonly IList<(string feild, string value)> _headers = new List<(string, string)>();
         public Request Request { get; }
 
-        public Response(IHttpStatusCode statusCode, Version version = null, Request request=null)
+        public Response(IHttpStatusCode statusCode, Version version = null, Request request = null)
         {
             _version = version ?? HttpVersion.Version11;
             _statusCode = statusCode;
@@ -26,6 +28,18 @@ namespace HttpServer.Responses
         public void AddHeader(string feild, string value)
         {
             _headers.Add((feild, value));
+        }
+
+        public byte[] Bytes(Encoding encoding)
+        {
+            var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders());
+            var body = encoding.GetBytes(MakeBody());
+
+            var response = new byte[header.Length + body.Length];
+            Array.Copy(header, response, header.Length);
+            Array.Copy(body, 0, response, header.Length, body.Length);
+            
+            return response;
         }
 
         public override string ToString()

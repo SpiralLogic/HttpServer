@@ -77,7 +77,7 @@ namespace HttpServer.Listeners
                 listenerStartedEvent.Set();
                 if (_tcpSocketListener.Pending())
                 {
-                    ProcessRequest();
+                    Task.Run(() => ProcessRequest(), _cancellationTokenSource.Token);
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace HttpServer.Listeners
         private void RespondToRequest(string data, Stream clientStream)
         {
             var response = _handleFunction(data);
-            var result = Encoding.GetBytes(response.ToString());
+            var result = response.Bytes(Encoding);
 
             clientStream.Write(result, 0, result.Length);
         }
