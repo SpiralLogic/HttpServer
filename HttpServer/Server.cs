@@ -3,7 +3,6 @@ using System.Net;
 using System.Text;
 using HttpServer.Listeners;
 using HttpServer.Loggers;
-using HttpServer.RequestHandlers;
 using HttpServer.Responses;
 
 namespace HttpServer
@@ -44,6 +43,7 @@ namespace HttpServer
         {
             _logger?.Log(request);
             var response = _router.CreateResponse(request);
+            
             return response;
         }
 

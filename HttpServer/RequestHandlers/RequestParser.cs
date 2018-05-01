@@ -19,20 +19,34 @@ namespace HttpServer.RequestHandlers
                 return BadRequest;
             }
 
-            return BuildRequest(requestLineSubStrings);
+            var request = BuildRequest(requestLineSubStrings);
+            AddHeadersToRequest(request, lines.Skip(1));
+
+            return request;
         }
 
         private Request BuildRequest(IReadOnlyList<string> requestLineSubStrings)
         {
-            var requestBuilder = new RequestBuilder
-            {
-                Type = RequestTypeFromString(requestLineSubStrings[0]),
-                Resource = requestLineSubStrings[1],
-                Endpoint = EndpointFrom(requestLineSubStrings[1]),
-                HttpVersion = HttpVersionFromString(requestLineSubStrings[2])
-            };
+            var request = new Request(
+                RequestTypeFromString(requestLineSubStrings[0]),
+                requestLineSubStrings[1],
+                EndpointFrom(requestLineSubStrings[1]),
+                HttpVersionFromString(requestLineSubStrings[2])
+            );
+            
+            return request;
+        }
 
-            return requestBuilder.Request;
+        private void AddHeadersToRequest(Request request, IEnumerable<string> headerLines)
+        {
+            foreach (var headerline in headerLines)
+            {
+                var headerParts = headerline.Split(':', 2);
+                
+                if (headerParts.Length != 2) continue;
+                
+                request.AddHeader(headerParts[0], headerParts[1]);
+            }
         }
 
         private RequestType RequestTypeFromString(string type)

@@ -28,17 +28,17 @@ namespace HttpServerTest
         }
 
         [Fact]
-        public async Task UnsupportedRequestReturnsBadRequest()
+        public async Task UnsupportedRequestReturnsMethodNotAllowed()
         {
             _router.AddRoute(RequestType.GET, Resource, _testHandler);
 
-            var request = new HttpRequestMessage(new HttpMethod("wawa"), _uri);
+            var request = new HttpRequestMessage(new HttpMethod("wawa"), CreateRequestUri("wawa"));
             var response = await _testClient.SendAsync(request);
 
             Assert.False(response.IsSuccessStatusCode);
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode);
         }
-
+    
         [Fact]
         public async Task CanCreateGetRoute()
         {

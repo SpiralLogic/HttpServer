@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses.ResponseCodes;
@@ -24,8 +23,9 @@ namespace HttpServer.Responses
         }
 
         public string StringBody { get; set; }
-
         public byte[] BodyBytes { get; set; }
+        public uint? RangeStart { get; set; }
+        public uint? RangeEnd { get; set; }
 
         public void AddHeader(string feild, string value)
         {

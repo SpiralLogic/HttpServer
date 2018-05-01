@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
@@ -18,6 +17,7 @@ namespace HttpServer
             = new Dictionary<string, IList<RequestType>>();
 
         private readonly ISet<string> _directoryRoutes = new HashSet<string>();
+        private static Response MethodNotAllowedResponse => new Response(new MethodNotAllowed());
 
         private static Response NotFoundResponse => new Response(new NotFound());
         private static Response BadRequestResponse => new Response(new BadRequest());
@@ -48,22 +48,33 @@ namespace HttpServer
                 return CreateHeadResponse(request);
             }
 
+
+            if (HasRequestHandler(request, out var requestHandler))
+            {
+                return requestHandler.Handle(request);
+            }
+
+            if (HadDirectoryHandler(request, out var directoryRequestHandler))
+            {
+                return directoryRequestHandler.Handle(request);
+            }
+
+            if (MethodNotAllowed(request))
+            {
+                return MethodNotAllowedResponse;
+            }
+
             if (request.Type == RequestType.UNKNOWN)
             {
                 return BadRequestResponse;
             }
 
-            if (HasRequestHandler(request, out var requestHandler))
-            {
-                return requestHandler?.Handle(request);
-            }
-
-            if (HadDirectoryHandler(request, out var directoryRequestHandler))
-            {
-                return directoryRequestHandler?.Handle(request);
-            }
-
             return NotFoundResponse;
+        }
+
+        private bool MethodNotAllowed(Request request)
+        {
+            return !_handlers.ContainsKey((request.Type, request.Resource)) && !_handlers.ContainsKey((request.Type, request.Path));
         }
 
         private bool HasRequestHandler(Request request, out IRequestHandler requestHandler)

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HttpServer.RequestHandlers
 {
     public class Request
     {
+        private readonly ICollection<(string feild, string value)> _headers = new List<(string feild, string value)>();
+        
         public RequestType Type { get; }
         public Version Version { get; }
         public string Resource { get; }
@@ -18,8 +21,14 @@ namespace HttpServer.RequestHandlers
             Endpoint = endpoint;
             Version = version;
             Path = MakePathFrom(resource);
+
         }
 
+        internal void AddHeader(string feild, string value)
+        {
+            _headers.Add((feild, value));
+        }
+        
         public override string ToString()
         {
             return $"Path: {Path} Endpoint: {Endpoint} Resource:{Resource}";
