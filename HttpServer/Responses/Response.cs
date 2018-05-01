@@ -24,7 +24,7 @@ namespace HttpServer.Responses
         }
 
         public string StringBody { get; set; }
-        
+
         public byte[] BodyBytes { get; set; }
 
         public void AddHeader(string feild, string value)
@@ -49,18 +49,11 @@ namespace HttpServer.Responses
             return result;
         }
 
-        public override string ToString()
-        {
-            return MakeStatusLine()
-                   + MakeHeaders()
-                   + MakeBody();
-        }
-
         private string MakeHeaders()
         {
             var headers = _headers.Select(header => $"{header.feild}: {header.value}");
 
-            return string.Join(CrLf, headers);
+            return string.Join(CrLf, headers) + CrLf;
         }
 
         private string MakeStatusLine()

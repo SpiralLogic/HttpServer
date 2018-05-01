@@ -50,7 +50,6 @@ namespace HttpServerTest
             Assert.Equal(RequestType.GET, _testHandler.LastRequest.Type);
         }
 
-
         [Fact]
         public async Task CanCreatePostRoute()
         {
@@ -92,7 +91,6 @@ namespace HttpServerTest
             Assert.Empty(responseBody);
         }
 
-
         private Uri CreateRequestUri(string path)
         {
             var requestUri = new UriBuilder
@@ -101,7 +99,7 @@ namespace HttpServerTest
                 Port = _server.Port,
                 Path = path
             };
-            
+
             Assert.NotNull(requestUri.Uri);
             return requestUri.Uri;
         }

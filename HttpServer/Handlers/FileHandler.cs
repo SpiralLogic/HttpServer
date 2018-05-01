@@ -41,9 +41,9 @@ namespace HttpServer.Handlers
             try
             {
                 var response = new Response(new Success());
-                
-                
+                response.AddHeader("Content-Type", MediaTypeMapper.MediaTypeFromFile(filename));
                 response.BodyBytes = File.ReadAllBytes(Path.Combine(directory, filename));
+                
                 return response;
             }
             catch (IOException)
