@@ -7,6 +7,7 @@ namespace HttpServerCobSpec
 {
     class Program
     {
+
         static void Main()
         {
             var logger = new ConsoleLogger();
@@ -40,6 +41,17 @@ namespace HttpServerCobSpec
             router.AddRoute(RequestType.GET, "/coffee", new Handler418());
             router.AddRoute(RequestType.GET, "/tea", new FormHandler());
 
+            router.AddRoute(RequestType.GET, "/redirect", new RedirectHandler("/"));
+            
+            var crudTestHandler = new CrudHandler("/cat-form/data");
+
+            router.AddRoute(RequestType.GET, "/cat-form/data", crudTestHandler);
+            router.AddRoute(RequestType.POST, "/cat-form", crudTestHandler);
+            router.AddRoute(RequestType.PUT, "/cat-form/data", crudTestHandler);
+            router.AddRoute(RequestType.DELETE, "/cat-form/data", crudTestHandler);
+            
+            router.AddRoute(RequestType.PATCH, "/patch-content.txt", new PatchHandler());
+            
             return router;
         }
     }

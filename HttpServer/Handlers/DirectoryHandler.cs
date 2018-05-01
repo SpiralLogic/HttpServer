@@ -9,13 +9,12 @@ namespace HttpServer.Handlers
 {
     public class DirectoryHandler : IRequestHandler
     {
-        private const string DefaultDirectory = "wwwroot";
         private readonly string _directory;
         private readonly FileHandler _fileHandler;
 
         public DirectoryHandler(string directory = null)
         {
-            _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), DefaultDirectory);
+            _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), Constants.DefaultDirectory);
             _fileHandler = new FileHandler(_directory);
         }
 

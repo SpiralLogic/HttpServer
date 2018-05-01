@@ -11,21 +11,33 @@ namespace HttpServer.RequestHandlers
 
         public Request Parse(string requestString)
         {
-            var lines = Regex.Split(requestString, "\r\n|\r|\n");
-            var requestLineSubStrings = lines.First().Split();
+            var requestPieces = requestString.Split("\r\n\r\n", 2);
+            var headers = requestPieces.First();
+
+            var headerLines = Regex.Split(headers, "\r\n|\r|\n");
+            var requestLineSubStrings = headerLines.First().Split();
 
             if (requestLineSubStrings.Length != 3)
             {
                 return BadRequest;
             }
 
-            var request = BuildRequest(requestLineSubStrings);
-            AddHeadersToRequest(request, lines.Skip(1));
+            var request = CreateRequest(requestLineSubStrings);
+            AddHeadersToRequest(request, headerLines.Skip(1));
+            AddBodyToRequest(request, requestPieces);
 
             return request;
         }
 
-        private Request BuildRequest(IReadOnlyList<string> requestLineSubStrings)
+        private static void AddBodyToRequest(Request request, string[] requestSplit)
+        {
+            if (requestSplit == null || requestSplit.Length != 2)
+                return;
+
+            request.Body = requestSplit.Skip(1).Take(1).First();
+        }
+
+        private Request CreateRequest(IReadOnlyList<string> requestLineSubStrings)
         {
             var request = new Request(
                 RequestTypeFromString(requestLineSubStrings[0]),
@@ -33,7 +45,7 @@ namespace HttpServer.RequestHandlers
                 EndpointFrom(requestLineSubStrings[1]),
                 HttpVersionFromString(requestLineSubStrings[2])
             );
-            
+
             return request;
         }
 
@@ -42,9 +54,9 @@ namespace HttpServer.RequestHandlers
             foreach (var headerline in headerLines)
             {
                 var headerParts = headerline.Split(':', 2);
-                
+
                 if (headerParts.Length != 2) continue;
-                
+
                 request.AddHeader(headerParts[0], headerParts[1]);
             }
         }
@@ -63,6 +75,10 @@ namespace HttpServer.RequestHandlers
                     return RequestType.POST;
                 case "PUT":
                     return RequestType.PUT;
+                case "PATCH":
+                    return RequestType.PATCH;
+                case "DELETE":
+                    return RequestType.DELETE;
                 default:
                     return RequestType.UNKNOWN;
             }
@@ -72,11 +88,6 @@ namespace HttpServer.RequestHandlers
         {
             var split = resource.Split('/');
             return split.Last();
-        }
-
-        private static string CreatePath(string resource, string endpoint)
-        {
-            return "/";
         }
 
         private static Version HttpVersionFromString(string type)

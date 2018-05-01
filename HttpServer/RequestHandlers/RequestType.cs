@@ -6,7 +6,9 @@
         GET,
         HEAD,
         POST,
+        PATCH,
         PUT,
+        DELETE,
         OPTIONS
     }
 }

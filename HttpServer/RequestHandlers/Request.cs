@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace HttpServer.RequestHandlers
 {
     public class Request
     {
-        private readonly ICollection<(string feild, string value)> _headers = new List<(string feild, string value)>();
-        
+        private readonly IOrderedDictionary _headers
+            = new OrderedDictionary();
+
         public RequestType Type { get; }
         public Version Version { get; }
         public string Resource { get; }
         public string Endpoint { get; }
         public string Path { get; }
+        public string Body { get; set; }
         public bool IsEndpoint => !string.IsNullOrEmpty(Endpoint);
 
         public Request(RequestType type, string resource, string endpoint, Version version)
@@ -21,14 +24,26 @@ namespace HttpServer.RequestHandlers
             Endpoint = endpoint;
             Version = version;
             Path = MakePathFrom(resource);
-
         }
 
         internal void AddHeader(string feild, string value)
         {
-            _headers.Add((feild, value));
+            _headers.Add(feild, value);
         }
-        
+
+        internal bool TryGetHeader(string feild, out string value)
+        {
+            if (!_headers.Contains(feild))
+            {
+                value = null;
+                
+                return false;
+            }
+
+            value = (string) _headers[feild];
+            return true;
+        }
+
         public override string ToString()
         {
             return $"Path: {Path} Endpoint: {Endpoint} Resource:{Resource}";
