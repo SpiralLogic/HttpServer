@@ -23,7 +23,9 @@ namespace HttpServer.Responses
             Request = request;
         }
 
-        public string Body { get; set; }
+        public string StringBody { get; set; }
+        
+        public byte[] BodyBytes { get; set; }
 
         public void AddHeader(string feild, string value)
         {
@@ -32,14 +34,19 @@ namespace HttpServer.Responses
 
         public byte[] Bytes(Encoding encoding)
         {
-            var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders());
-            var body = encoding.GetBytes(MakeBody());
+            var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders() + CrLf);
+            var body = BodyBytes ?? encoding.GetBytes(MakeBody());
 
-            var response = new byte[header.Length + body.Length];
-            Array.Copy(header, response, header.Length);
-            Array.Copy(body, 0, response, header.Length, body.Length);
-            
-            return response;
+            return CombineByteArrays(header, body);
+        }
+
+        private static byte[] CombineByteArrays(byte[] array1, byte[] array2)
+        {
+            var result = new byte[array1.Length + array2.Length];
+            Array.Copy(array1, result, array1.Length);
+            Array.Copy(array2, 0, result, array1.Length, array2.Length);
+
+            return result;
         }
 
         public override string ToString()
@@ -63,12 +70,12 @@ namespace HttpServer.Responses
 
         private string MakeBody()
         {
-            if (string.IsNullOrEmpty(Body))
+            if (string.IsNullOrEmpty(StringBody))
             {
-                return CrLf;
+                return string.Empty;
             }
 
-            return CrLf + Body;
+            return StringBody;
         }
     }
 }

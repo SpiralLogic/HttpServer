@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using Xunit;
@@ -19,7 +20,7 @@ namespace HttpServerTest.HandlerTests
 
             var response = directoryHandler.Handle(request);
 
-            Assert.True(response.Body.StartsWith("<html>"));
+            Assert.True(response.StringBody.StartsWith("<html>"));
         }
 
         [Fact]
@@ -30,7 +31,7 @@ namespace HttpServerTest.HandlerTests
 
             var response = directoryHandler.Handle(request);
 
-            Assert.Equal("Test File", response.Body);
+            Assert.Equal(Encoding.UTF8.GetBytes("Test File"), response.BodyBytes);
         }
     }
 }

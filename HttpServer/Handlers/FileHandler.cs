@@ -41,7 +41,9 @@ namespace HttpServer.Handlers
             try
             {
                 var response = new Response(new Success());
-                response.Body = File.ReadAllText(Path.Combine(directory, filename));
+                
+                
+                response.BodyBytes = File.ReadAllBytes(Path.Combine(directory, filename));
                 return response;
             }
             catch (IOException)

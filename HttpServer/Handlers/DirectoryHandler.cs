@@ -50,7 +50,7 @@ namespace HttpServer.Handlers
             var directories = Directory.GetFileSystemEntries(directory).Select(GetFileNameAsLink);
             var responseBody = string.Join("<br>", directories);
 
-            response.Body = WrapInHtml(responseBody);
+            response.StringBody = WrapInHtml(responseBody);
 
             return response;
         }

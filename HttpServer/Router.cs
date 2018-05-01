@@ -100,7 +100,7 @@ namespace HttpServer
             if (_handlers.TryGetValue((RequestType.GET, request.Resource), out var requestHandler))
             {
                 var response = requestHandler.Handle(request);
-                response.Body = string.Empty;
+                response.StringBody = string.Empty;
 
                 return response;
             }

@@ -42,11 +42,8 @@ namespace HttpServer
 
         private Response _routeRequest(string request)
         {
-            // _logger?.Log(request);
+            _logger?.Log(request);
             var response = _router.CreateResponse(request);
-
-            // _logger?.Log(response.ToString());
-
             return response;
         }
 
