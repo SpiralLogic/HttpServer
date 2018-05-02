@@ -16,7 +16,7 @@ namespace HttpServerTest
             LastRequest = request;
             RequestRecievedEvent?.Invoke(this, new EventArgs());
         
-            return new Response(new TestStatusCode());
+            return new Response(new TestStatusCode(), request);
         }
     }
 

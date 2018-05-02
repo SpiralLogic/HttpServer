@@ -43,7 +43,7 @@ namespace HttpServer
         {
             _logger?.Log(request);
             var response = _router.CreateResponse(request);
-            
+
             return response;
         }
 

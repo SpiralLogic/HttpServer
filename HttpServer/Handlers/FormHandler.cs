@@ -8,13 +8,10 @@ namespace HttpServer.Handlers
 {
     public class FormHandler : IRequestHandler
     {
-        public FormHandler()
-        {
-        }
 
         public Response Handle(Request request)
         {
-            return new Response(new Success());
+            return new Response(new Success(), request);
         }
     }
 }

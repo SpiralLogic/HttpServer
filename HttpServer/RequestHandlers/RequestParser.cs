@@ -25,6 +25,7 @@ namespace HttpServer.RequestHandlers
             var request = CreateRequest(requestLineSubStrings);
             AddHeadersToRequest(request, headerLines.Skip(1));
             AddBodyToRequest(request, requestPieces);
+            AddByteRangesToRequest(request);
 
             return request;
         }
@@ -49,7 +50,7 @@ namespace HttpServer.RequestHandlers
             return request;
         }
 
-        private void AddHeadersToRequest(Request request, IEnumerable<string> headerLines)
+        private static void AddHeadersToRequest(Request request, IEnumerable<string> headerLines)
         {
             foreach (var headerline in headerLines)
             {
@@ -59,9 +60,30 @@ namespace HttpServer.RequestHandlers
 
                 request.AddHeader(headerParts[0], headerParts[1]);
             }
+
         }
 
-        private RequestType RequestTypeFromString(string type)
+        private static void AddByteRangesToRequest(Request request)
+        {
+            if (!request.TryGetHeader("Range", out var rangeHeader))
+            {
+                return;
+            }
+
+            var bytesSplit = Regex.Split(rangeHeader, "bytes=([0-9]*)-([0-9]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            if (uint.TryParse(bytesSplit[1], out var rangeStart))
+            {
+                request.RangeStart = rangeStart;
+            }
+            
+            if (uint.TryParse(bytesSplit[2], out var rangeEnd))
+            {
+                request.RangeEnd = rangeEnd;
+            }
+        }
+
+        private static RequestType RequestTypeFromString(string type)
         {
             switch (type)
             {

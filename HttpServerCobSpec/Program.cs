@@ -33,15 +33,20 @@ namespace HttpServerCobSpec
             router.AddRoute(RequestType.POST, "/form", new FormHandler());
             router.AddRoute(RequestType.PUT, "/put-target", new FormHandler());
 
-            router.AddRoute(RequestType.GET, "/method_options", new FormHandler());
-            router.AddRoute(RequestType.PUT, "/method_options", new FormHandler());
-            router.AddRoute(RequestType.POST, "/method_options", new FormHandler());
+            router.AddRoute(RequestType.GET, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestType.PUT, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestType.POST, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestType.GET, "/method_options2", new StringContentHandler());
 
-            router.AddRoute(RequestType.GET, "/method_options2", new FormHandler());
             router.AddRoute(RequestType.GET, "/coffee", new Handler418());
             router.AddRoute(RequestType.GET, "/tea", new FormHandler());
 
             router.AddRoute(RequestType.GET, "/redirect", new RedirectHandler("/"));
+      
+            router.AddRoute(RequestType.PATCH, "/patch-content.txt", new PatchHandler());
+            router.AddRoute(RequestType.GET, "/partial_content.txt", new PartialContentTest());
+            router.AddRoute(RequestType.GET, "/cookie?type=chocolate", new CookieHandler("Eat"));
+            router.AddRoute(RequestType.GET, "/eat_cookie", new CookieHandler("mmmm chocolate"));
             
             var crudTestHandler = new CrudHandler("/cat-form/data");
 
@@ -50,8 +55,8 @@ namespace HttpServerCobSpec
             router.AddRoute(RequestType.PUT, "/cat-form/data", crudTestHandler);
             router.AddRoute(RequestType.DELETE, "/cat-form/data", crudTestHandler);
             
-            router.AddRoute(RequestType.PATCH, "/patch-content.txt", new PatchHandler());
             
+
             return router;
         }
     }

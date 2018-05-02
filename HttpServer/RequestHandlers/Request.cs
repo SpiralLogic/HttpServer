@@ -16,7 +16,10 @@ namespace HttpServer.RequestHandlers
         public string Path { get; }
         public string Body { get; set; }
         public bool IsEndpoint => !string.IsNullOrEmpty(Endpoint);
-
+        
+        internal uint RangeStart { get; set; }
+        internal uint? RangeEnd { get; set; }
+        
         public Request(RequestType type, string resource, string endpoint, Version version)
         {
             Type = type;

@@ -11,21 +11,19 @@ namespace HttpServer.Responses
     {
         private const string CrLf = "\r\n";
         private readonly Version _version;
-        private readonly IHttpStatusCode _statusCode;
+        private  IHttpStatusCode _statusCode;
         private readonly IList<(string feild, string value)> _headers = new List<(string, string)>();
         public Request Request { get; }
 
-        public Response(IHttpStatusCode statusCode, Version version = null, Request request = null)
+        public Response(IHttpStatusCode statusCode, Request request)
         {
-            _version = version ?? HttpVersion.Version11;
+            Request = request ?? throw new ArgumentException(nameof(request));
+            _version = Request.Version ?? HttpVersion.Version11;
             _statusCode = statusCode;
-            Request = request;
         }
 
         public string StringBody { get; set; }
         public byte[] BodyBytes { get; set; }
-        public uint? RangeStart { get; set; }
-        public uint? RangeEnd { get; set; }
 
         public void AddHeader(string feild, string value)
         {
@@ -35,9 +33,42 @@ namespace HttpServer.Responses
         public byte[] Bytes(Encoding encoding)
         {
             var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders() + CrLf);
-            var body = BodyBytes ?? encoding.GetBytes(MakeBody());
+            var body = RequestedBodyBytes(encoding);
 
             return CombineByteArrays(header, body);
+        }
+
+        private byte[] RequestedBodyBytes(Encoding encoding)
+        {
+            var bytes = BodyBytes ?? encoding.GetBytes(MakeBody());
+            var end = (uint) bytes.Length;
+
+            if (Request.RangeEnd.HasValue && Request.RangeEnd.Value < bytes.Length)
+            {
+                end = Request.RangeEnd.Value + 1;
+            }
+
+            var start = Request.RangeStart <= bytes.Length ? Request.RangeStart : 0;
+
+            if (end < start)
+            {
+                end = start;
+            }
+
+            Request.RangeStart = start;
+            Request.RangeEnd = end;
+            var length = end - start;
+
+            if (start == 0 && end == bytes.Length)
+            {
+                return bytes;
+                
+            }
+            
+            var result = new byte[length];
+            Array.Copy(bytes, (int)start, result, 0, (int)length);
+            _statusCode = new PartialContent();
+            return result;
         }
 
         private static byte[] CombineByteArrays(byte[] array1, byte[] array2)

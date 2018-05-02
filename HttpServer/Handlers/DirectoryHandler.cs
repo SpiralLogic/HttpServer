@@ -31,10 +31,10 @@ namespace HttpServer.Handlers
 
             if (ResourceNotFound(directoryPath))
             {
-                return new Response(new NotFound());
+                return new Response(new NotFound(), request);
             }
 
-            return CreateSuccessResponse(directoryPath);
+            return CreateSuccessResponse(directoryPath, request);
         }
 
         private bool ResourceNotFound(string directory)
@@ -42,9 +42,9 @@ namespace HttpServer.Handlers
             return !Directory.Exists(directory);
         }
 
-        private Response CreateSuccessResponse(string directory)
+        private Response CreateSuccessResponse(string directory, Request request)
         {
-            var response = new Response(new Success());
+            var response = new Response(new Success(), request);
 
             var directories = Directory.GetFileSystemEntries(directory).Select(GetFileNameAsLink);
             var responseBody = string.Join("<br>", directories);

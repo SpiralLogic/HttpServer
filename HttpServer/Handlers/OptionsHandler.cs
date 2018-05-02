@@ -10,15 +10,15 @@ namespace HttpServer.Handlers
     public class OptionsHandler : IRequestHandler
     {
         private readonly IEnumerable<RequestType> _requestTypes;
-        
+
         internal OptionsHandler(IEnumerable<RequestType> requestTypes)
         {
             _requestTypes = requestTypes;
         }
-        
+
         public Response Handle(Request request)
         {
-            var response = new Response(new Success());
+            var response = new Response(new Success(), request);
             response.AddHeader("Allow", CreateAllowHeader());
 
             return response;
@@ -27,7 +27,7 @@ namespace HttpServer.Handlers
         private string CreateAllowHeader()
         {
             var allowedRequestTypes = _requestTypes.Select(type => Enum.GetName(typeof(RequestType), type));
-            
+
             return string.Join(", ", allowedRequestTypes);
         }
     }

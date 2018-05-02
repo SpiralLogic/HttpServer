@@ -12,13 +12,13 @@ namespace HttpServer.Handlers
         public RedirectHandler(string location)
         {
             if (string.IsNullOrEmpty(location)) throw new ArgumentException(nameof(location));
-            
+
             _location = location;
         }
-        
+
         public Response Handle(Request request)
         {
-            var response = new Response(new Found());
+            var response = new Response(new Found(), request);
             response.AddHeader("Location", _location);
 
             return response;

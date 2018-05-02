@@ -8,7 +8,7 @@ namespace HttpServer.Handlers
     {
         public Response Handle(Request request)
         {
-            return new Response(new BadRequest());
+            return new Response(new BadRequest(), request);
         }
     }
 }

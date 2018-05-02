@@ -19,58 +19,58 @@ namespace HttpServer.Handlers
         {
             if (request.Type == RequestType.GET)
             {
-                return RespondWithData();
+                return RespondWithData(request);
             }
 
             if (request.Type == RequestType.POST)
             {
-                return RespondWithDataCreated(request.Body);
+                return RespondWithDataCreated(request);
             }
 
             if (request.Type == RequestType.PUT)
             {
-                return RespondWithDataUpdateSuccess(request.Body);
+                return RespondWithDataUpdateSuccess(request);
             }
 
             if (request.Type == RequestType.DELETE)
             {
-                return RespondWithDataDeleteSuccess();
+                return RespondWithDataDeleteSuccess(request);
             }
 
-            return new Response(new MethodNotAllowed());
+            return new Response(new MethodNotAllowed(), request);
         }
 
-        private Response RespondWithData()
+        private Response RespondWithData(Request request)
         {
             if (string.IsNullOrEmpty(_data))
-                return new Response(new NotFound());
+                return new Response(new NotFound(),request);
 
-            return new Response(new Success()) {StringBody = _data};
+            return new Response(new Success(), request) {StringBody = _data};
         }
 
-        private Response RespondWithDataCreated(string data)
+        private Response RespondWithDataCreated(Request request)
         {
-            _data = data;
+            _data = request.Body;
 
-            var response = new Response(new Created()) {StringBody = _data};
+            var response = new Response(new Created(), request) {StringBody = _data};
 
             response.AddHeader("Location", _dataLocation);
 
             return response;
         }
 
-        private Response RespondWithDataUpdateSuccess(string data)
+        private Response RespondWithDataUpdateSuccess(Request request)
         {
-            _data = data;
+            _data = request.Body;
 
-            return new Response(new Success()) {StringBody = _data};
+            return new Response(new Success(), request) {StringBody = _data};
         }
 
-        private Response RespondWithDataDeleteSuccess()
+        private Response RespondWithDataDeleteSuccess(Request request)
         {
             _data = null;
 
-            return new Response(new Success());
+            return new Response(new Success(), request);
         }
     }
 }

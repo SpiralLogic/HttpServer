@@ -17,13 +17,12 @@ namespace HttpServer.Handlers
 
         public Response Handle(Request request)
         {
-
             if (request.Type == RequestType.PATCH)
             {
                 return CreatePatchResponse(request);
             }
 
-            return new Response(new MethodNotAllowed());
+            return new Response(new MethodNotAllowed(), request);
         }
 
         private Response CreatePatchResponse(Request request)
@@ -36,14 +35,14 @@ namespace HttpServer.Handlers
             try
             {
                 var file = Path.Combine(_directory, request.Endpoint);
-                File.WriteAllText( file, request.Body);
+                File.WriteAllText(file, request.Body);
             }
             catch (IOException)
             {
-                return new Response(new BadRequest());
+                return new Response(new BadRequest(), request);
             }
 
-            return new Response(new NoContent());
+            return new Response(new NoContent(), request);
         }
     }
 }

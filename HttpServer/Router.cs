@@ -17,10 +17,10 @@ namespace HttpServer
             = new Dictionary<string, IList<RequestType>>();
 
         private readonly ISet<string> _directoryRoutes = new HashSet<string>();
-        private static Response MethodNotAllowedResponse => new Response(new MethodNotAllowed());
 
-        private static Response NotFoundResponse => new Response(new NotFound());
-        private static Response BadRequestResponse => new Response(new BadRequest());
+        private static Response MethodNotAllowedResponse(Request request) => new Response(new MethodNotAllowed(), request);
+        private static Response NotFoundResponse(Request request) => new Response(new NotFound(), request);
+        private static Response BadRequestResponse(Request request) => new Response(new BadRequest(), request);
 
         public Router()
         {
@@ -48,7 +48,6 @@ namespace HttpServer
                 return CreateHeadResponse(request);
             }
 
-
             if (HasRequestHandler(request, out var requestHandler))
             {
                 return requestHandler.Handle(request);
@@ -61,15 +60,15 @@ namespace HttpServer
 
             if (MethodNotAllowed(request))
             {
-                return MethodNotAllowedResponse;
+                return MethodNotAllowedResponse(request);
             }
 
             if (request.Type == RequestType.UNKNOWN)
             {
-                return BadRequestResponse;
+                return BadRequestResponse(request);
             }
 
-            return NotFoundResponse;
+            return NotFoundResponse(request);
         }
 
         private bool MethodNotAllowed(Request request)
@@ -116,7 +115,7 @@ namespace HttpServer
                 return response;
             }
 
-            return NotFoundResponse;
+            return NotFoundResponse(request);
         }
     }
 }

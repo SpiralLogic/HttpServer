@@ -8,7 +8,7 @@ namespace HttpServer.Handlers
     {
         public Response Handle(Request request)
         {
-            return new Response(new Teapot()) {StringBody = "I'm a teapot"};
+            return new Response(new Teapot(), request) {StringBody = "I'm a teapot"};
         }
     }
 }
