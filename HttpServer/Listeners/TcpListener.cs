@@ -4,9 +4,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HttpServer.Handlers;
-using HttpServer.RequestHandlers;
-using HttpServer.Responses;
 
 namespace HttpServer.Listeners
 {
@@ -20,12 +17,11 @@ namespace HttpServer.Listeners
         private int _port;
         private System.Net.Sockets.TcpListener _tcpSocketListener;
         private CancellationTokenSource _cancellationTokenSource;
-        private readonly Func<string, Response> _handleFunction;
+        private readonly Func<string, byte[]> _handleFunction;
 
-        public Encoding Encoding { get; } = Encoding.UTF8;
         public bool IsListening { get; private set; }
 
-        public TcpListener(Func<string, Response> handleFunction, IPAddress ipAddress = null, int port = 0)
+        public TcpListener(Func<string, byte[]> handleFunction, IPAddress ipAddress = null, int port = 0)
         {
             _ipAddress = ipAddress ?? IPAddress.Loopback;
             _handleFunction = handleFunction;
@@ -106,7 +102,7 @@ namespace HttpServer.Listeners
         {
             var bytes = new byte[BufferSize];
             var bytesRead = clientStream.Read(bytes, 0, BufferSize);
-            var data = Encoding.GetString(bytes, 0, bytesRead);
+            var data = Encoding.UTF8.GetString(bytes, 0, bytesRead);
 
             return data;
         }
@@ -114,9 +110,8 @@ namespace HttpServer.Listeners
         private void RespondToRequest(string data, Stream clientStream)
         {
             var response = _handleFunction(data);
-            var result = response.Bytes(Encoding);
 
-            clientStream.Write(result, 0, result.Length);
+            clientStream.Write(response, 0, response.Length);
         }
     }
 }

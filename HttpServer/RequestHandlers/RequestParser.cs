@@ -7,7 +7,7 @@ namespace HttpServer.RequestHandlers
 {
     internal class RequestParser
     {
-        private Request BadRequest => new Request(RequestType.UNKNOWN, string.Empty, string.Empty, new Version());
+        private static Request BadRequest => new Request(RequestType.UNKNOWN, string.Empty, string.Empty, new Version());
 
         public Request Parse(string requestString)
         {
@@ -40,14 +40,40 @@ namespace HttpServer.RequestHandlers
 
         private Request CreateRequest(IReadOnlyList<string> requestLineSubStrings)
         {
+            var resource = ResourceFromRequestString(requestLineSubStrings[1]);
             var request = new Request(
                 RequestTypeFromString(requestLineSubStrings[0]),
-                requestLineSubStrings[1],
-                EndpointFrom(requestLineSubStrings[1]),
+                resource,
+                EndpointFrom(resource),
                 HttpVersionFromString(requestLineSubStrings[2])
             );
 
+            AddParametersTo(request, requestLineSubStrings[1]);
+
             return request;
+        }
+
+        private void AddParametersTo(Request request, string uriResource)
+        {
+            var uriSplit = uriResource.Split('?', 2);
+            if (uriSplit.Length != 2)
+            {
+                return;
+            }
+
+            foreach (var parmeter in uriSplit[1].Split("&"))
+            {
+                var parmeterSplit = parmeter.Split("=");
+                var field = parmeterSplit.First();
+                var value = parmeterSplit.Skip(1).FirstOrDefault();
+
+                request.AddParameter(field, Uri.UnescapeDataString(value));
+            }
+        }
+
+        private string ResourceFromRequestString(string uriResource)
+        {
+            return uriResource.Split('?').FirstOrDefault();
         }
 
         private static void AddHeadersToRequest(Request request, IEnumerable<string> headerLines)
@@ -60,7 +86,6 @@ namespace HttpServer.RequestHandlers
 
                 request.AddHeader(headerParts[0], headerParts[1]);
             }
-
         }
 
         private static void AddByteRangesToRequest(Request request)
@@ -76,7 +101,7 @@ namespace HttpServer.RequestHandlers
             {
                 request.RangeStart = rangeStart;
             }
-            
+
             if (uint.TryParse(bytesSplit[2], out var rangeEnd))
             {
                 request.RangeEnd = rangeEnd;

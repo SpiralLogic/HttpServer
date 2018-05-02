@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using HttpServer.RequestHandlers;
+﻿using HttpServer.RequestHandlers;
 using HttpServer.Responses;
 using HttpServer.Responses.ResponseCodes;
 
@@ -8,6 +6,7 @@ namespace HttpServer.Handlers
 {
     public class CookieHandler : IRequestHandler
     {
+        // TODO: Don't hardcode this
         private readonly string _content;
 
         public CookieHandler(string content = null)
@@ -24,8 +23,9 @@ namespace HttpServer.Handlers
                 response.StringBody = _content;
             }
 
-            //TODO: User Querty String
-            response.AddHeader("Set-Cookie", "type=chocolate");
+            request.Parameters.TryGetValue("type", out var type);
+            
+            response.AddHeader("Set-Cookie", $"type={type}");
             return response;
         }
     }

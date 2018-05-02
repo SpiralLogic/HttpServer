@@ -9,6 +9,9 @@ namespace HttpServer.RequestHandlers
         private readonly IOrderedDictionary _headers
             = new OrderedDictionary();
 
+        internal readonly IDictionary<string,string> Parameters 
+            = new Dictionary<string, string>();
+
         public RequestType Type { get; }
         public Version Version { get; }
         public string Resource { get; }
@@ -60,6 +63,11 @@ namespace HttpServer.RequestHandlers
             }
 
             return Resource.Remove(Resource.LastIndexOf(Endpoint, StringComparison.Ordinal));
+        }
+
+        public void AddParameter(string field, string value)
+        {
+            Parameters.TryAdd(field, value);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace HttpServer
         private readonly IListener _listener;
         private readonly Router _router;
 
-        public Encoding Encoding => _listener.Encoding;
+        public Encoding Encoding = Encoding.UTF8;
         public bool IsRunning => _listener.IsListening;
 
         public Server(Router router, ILogger logger)
@@ -39,12 +39,23 @@ namespace HttpServer
             if (_listener.IsListening) _listener.Stop();
         }
 
-        private Response _routeRequest(string request)
+        private byte[] _routeRequest(string request)
         {
-            _logger?.Log(request);
-            var response = _router.CreateResponse(request);
+            try
+            {
+                _logger?.Log(request);
 
-            return response;
+                var response = _router.CreateResponse(request);
+
+                return response.Bytes(Encoding);
+            }
+            catch (Exception ex)
+            {
+                _logger?.Log($"ERROR: {ex.Message} {ex.StackTrace}");
+            }
+
+            return new byte[0];
+            ;
         }
 
         public void Dispose()
