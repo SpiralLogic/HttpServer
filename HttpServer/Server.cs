@@ -55,7 +55,6 @@ namespace HttpServer
             }
 
             return new byte[0];
-            ;
         }
 
         public void Dispose()

@@ -11,7 +11,7 @@ namespace HttpServer.Responses
     {
         private const string CrLf = "\r\n";
         private readonly Version _version;
-        private  IHttpStatusCode _statusCode;
+        private IHttpStatusCode _statusCode;
         private readonly IList<(string feild, string value)> _headers = new List<(string, string)>();
         public Request Request { get; }
 
@@ -41,32 +41,13 @@ namespace HttpServer.Responses
         private byte[] RequestedBodyBytes(Encoding encoding)
         {
             var bytes = BodyBytes ?? encoding.GetBytes(MakeBody());
-            var end = (uint) bytes.Length;
+            return bytes;
+            if (Request.RangeEnd == -1) Request.RangeEnd = bytes.Length;
 
-            if (Request.RangeEnd.HasValue && Request.RangeEnd.Value < bytes.Length)
-            {
-                end = Request.RangeEnd.Value + 1;
-            }
-
-            var start = Request.RangeStart <= bytes.Length ? Request.RangeStart : 0;
-
-            if (end < start)
-            {
-                end = start;
-            }
-
-            Request.RangeStart = start;
-            Request.RangeEnd = end;
-            var length = end - start;
-
-            if (start == 0 && end == bytes.Length)
-            {
-                return bytes;
-                
-            }
-            
+            var length = Request.RangeEnd - Request.RangeStart;
             var result = new byte[length];
-            Array.Copy(bytes, (int)start, result, 0, (int)length);
+            Array.Copy(bytes, Request.RangeStart, result, 0, length);
+
             _statusCode = new PartialContent();
             return result;
         }

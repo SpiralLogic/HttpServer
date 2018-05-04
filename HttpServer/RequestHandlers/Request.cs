@@ -9,7 +9,7 @@ namespace HttpServer.RequestHandlers
         private readonly IOrderedDictionary _headers
             = new OrderedDictionary();
 
-        internal readonly IDictionary<string,string> Parameters 
+        internal readonly IDictionary<string, string> Parameters
             = new Dictionary<string, string>();
 
         public RequestType Type { get; }
@@ -19,10 +19,11 @@ namespace HttpServer.RequestHandlers
         public string Path { get; }
         public string Body { get; set; }
         public bool IsEndpoint => !string.IsNullOrEmpty(Endpoint);
-        
-        internal uint RangeStart { get; set; }
-        internal uint? RangeEnd { get; set; }
-        
+
+        internal int RangeStart { get; set; }
+        internal int RangeEnd { get; set; } = -1;
+        public Authorization Authorization { get; set; }
+
         public Request(RequestType type, string resource, string endpoint, Version version)
         {
             Type = type;
@@ -34,7 +35,7 @@ namespace HttpServer.RequestHandlers
 
         internal void AddHeader(string feild, string value)
         {
-            _headers.Add(feild, value);
+            _headers.Add(feild.Trim(), value.Trim());
         }
 
         internal bool TryGetHeader(string feild, out string value)
@@ -42,7 +43,7 @@ namespace HttpServer.RequestHandlers
             if (!_headers.Contains(feild))
             {
                 value = null;
-                
+
                 return false;
             }
 

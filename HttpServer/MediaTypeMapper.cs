@@ -14,7 +14,13 @@ namespace HttpServer
 
         private static void AddMediaTypesToMap()
         {
-            _extensionToMediaTypeMap = new Dictionary<string, string> {{".jpeg", "image/jpeg"}, {".png", "image/png"}, {".gif", "image/gif"}, {".txt", "text/plain"}};
+            _extensionToMediaTypeMap = new Dictionary<string, string>
+            {
+                {".jpeg", "image/jpeg"}, 
+                {".png", "image/png"}, 
+                {".gif", "image/gif"}, 
+                {".txt", "text/plain"}
+            };
         }
 
         public static string MediaTypeFromFile(string file)

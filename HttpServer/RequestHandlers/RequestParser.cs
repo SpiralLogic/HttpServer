@@ -24,8 +24,9 @@ namespace HttpServer.RequestHandlers
 
             var request = CreateRequest(requestLineSubStrings);
             AddHeadersToRequest(request, headerLines.Skip(1));
-            AddBodyToRequest(request, requestPieces);
             AddByteRangesToRequest(request);
+            AddBodyToRequest(request, requestPieces);
+            AddAuthorizationTo(request);
 
             return request;
         }
@@ -41,6 +42,7 @@ namespace HttpServer.RequestHandlers
         private Request CreateRequest(IReadOnlyList<string> requestLineSubStrings)
         {
             var resource = ResourceFromRequestString(requestLineSubStrings[1]);
+
             var request = new Request(
                 RequestTypeFromString(requestLineSubStrings[0]),
                 resource,
@@ -97,15 +99,38 @@ namespace HttpServer.RequestHandlers
 
             var bytesSplit = Regex.Split(rangeHeader, "bytes=([0-9]*)-([0-9]*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-            if (uint.TryParse(bytesSplit[1], out var rangeStart))
+            if (int.TryParse(bytesSplit[1], out var rangeStart))
             {
                 request.RangeStart = rangeStart;
             }
 
-            if (uint.TryParse(bytesSplit[2], out var rangeEnd))
+            if (int.TryParse(bytesSplit[2], out var rangeEnd))
             {
                 request.RangeEnd = rangeEnd;
             }
+            else
+            {
+                request.RangeEnd = -1;
+            }
+        }
+
+        private void AddAuthorizationTo(Request request)
+        {
+            var password = string.Empty;
+            IAuthorizationScheme authorizationScheme = new NoAuthorizationScheme();
+
+            if (request.TryGetHeader("Authorization", out var authorizationHeader))
+            {
+                var authorizationHeaderSplit = Regex.Split(authorizationHeader, "([a-z]+) (.+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                authorizationScheme = AuthorizationSchemeFactory.FromString(authorizationHeaderSplit[1]);
+
+                if (authorizationHeaderSplit.Length > 2)
+                {
+                    password = authorizationHeaderSplit[2];
+                }
+            }
+
+            request.Authorization = new Authorization(authorizationScheme, password);
         }
 
         private static RequestType RequestTypeFromString(string type)
