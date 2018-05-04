@@ -108,10 +108,6 @@ namespace HttpServer.RequestHandlers
             {
                 request.RangeEnd = rangeEnd;
             }
-            else
-            {
-                request.RangeEnd = -1;
-            }
         }
 
         private void AddAuthorizationTo(Request request)

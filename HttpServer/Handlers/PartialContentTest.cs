@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -9,10 +8,10 @@ namespace HttpServer.Handlers
     {
         public Response Handle(Request request)
         {
-            var response = new Response(new PartialContent(), request);
+            var response = new Response(HttpStatusCodes.PartialContent, request);
 
-                response.BodyBytes = Encoding.ASCII.GetBytes("This");
-            
+            response.StringBody = $"{request.RangeStart} {request.RangeEnd} {request.RangeEnd - request.RangeStart + 1}";
+
             return response;
         }
     }

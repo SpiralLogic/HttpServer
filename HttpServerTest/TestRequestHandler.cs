@@ -2,7 +2,6 @@ using System;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServerTest
 {
@@ -16,7 +15,7 @@ namespace HttpServerTest
             LastRequest = request;
             RequestRecievedEvent?.Invoke(this, new EventArgs());
         
-            return new Response(new TestStatusCode(), request);
+            return new Response(new TestStatusCode(200, "Ok"), request);
         }
     }
 
@@ -27,9 +26,13 @@ namespace HttpServerTest
         }
     }
 
-    internal class TestStatusCode : IHttpStatusCode
+    internal class TestStatusCode : HttpStatusCode
     {
         public int Code { get; } = 200;
         public string Status { get; } = "yes";
+
+        protected internal TestStatusCode(int code, string status) : base(code, status)
+        {
+        }
     }
 }

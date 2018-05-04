@@ -2,7 +2,6 @@
 using System.IO;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -11,7 +10,7 @@ namespace HttpServer.Handlers
 
         public Response Handle(Request request)
         {
-            return new Response(new Success(), request);
+            return new Response(HttpStatusCodes.Ok, request);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HttpServer.RequestHandlers;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Responses
 {
@@ -11,11 +10,11 @@ namespace HttpServer.Responses
     {
         private const string CrLf = "\r\n";
         private readonly Version _version;
-        private IHttpStatusCode _statusCode;
+        private HttpStatusCode _statusCode;
         private readonly IList<(string feild, string value)> _headers = new List<(string, string)>();
         public Request Request { get; }
 
-        public Response(IHttpStatusCode statusCode, Request request)
+        public Response(HttpStatusCode statusCode, Request request)
         {
             Request = request ?? throw new ArgumentException(nameof(request));
             _version = Request.Version ?? HttpVersion.Version11;
@@ -32,8 +31,8 @@ namespace HttpServer.Responses
 
         public byte[] Bytes(Encoding encoding)
         {
-            var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders() + CrLf);
             var body = RequestedBodyBytes(encoding);
+            var header = encoding.GetBytes(MakeStatusLine() + MakeHeaders() + CrLf);
 
             return CombineByteArrays(header, body);
         }
@@ -41,14 +40,43 @@ namespace HttpServer.Responses
         private byte[] RequestedBodyBytes(Encoding encoding)
         {
             var bytes = BodyBytes ?? encoding.GetBytes(MakeBody());
-            return bytes;
-            if (Request.RangeEnd == -1) Request.RangeEnd = bytes.Length;
 
-            var length = Request.RangeEnd - Request.RangeStart;
+            if (Request.RangeStart == null && Request.RangeEnd == null)
+            {
+                return bytes;
+            }
+        
+            if (Request.RangeStart == null && Request.RangeEnd.HasValue)
+            {
+                Request.RangeStart = bytes.Length - Request.RangeEnd;
+                Request.RangeEnd = bytes.Length - 1;
+            }
+
+            if (Request.RangeEnd == null)
+            {
+                Request.RangeEnd = bytes.Length - 1;
+            }
+
+            if (Request.RangeEnd > bytes.Length ||
+                Request.RangeEnd < Request.RangeStart ||
+                Request.RangeEnd < 0 ||
+                Request.RangeStart < 0 ||
+                Request.RangeStart > bytes.Length)
+            {
+                AddHeader("Content-Range", $"bytes */{bytes.Length}");
+                _statusCode = HttpStatusCodes.RangeNotSatisfiable;
+
+                return new byte[] {0};
+            }
+
+            AddHeader("Content-Range", $"bytes {Request.RangeStart}-{Request.RangeEnd}/{bytes.Length}");
+            _statusCode = HttpStatusCodes.PartialContent;
+
+
+            var length = Request.RangeEnd.Value - Request.RangeStart.Value +1;
+            
             var result = new byte[length];
-            Array.Copy(bytes, Request.RangeStart, result, 0, length);
-
-            _statusCode = new PartialContent();
+            Array.Copy(bytes, Request.RangeStart.Value, result, 0, length);
             return result;
         }
 
@@ -83,4 +111,5 @@ namespace HttpServer.Responses
             return StringBody;
         }
     }
+
 }

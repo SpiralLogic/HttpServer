@@ -2,7 +2,6 @@
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer
 {
@@ -18,9 +17,9 @@ namespace HttpServer
 
         private readonly ISet<string> _directoryRoutes = new HashSet<string>();
 
-        private static Response MethodNotAllowedResponse(Request request) => new Response(new MethodNotAllowed(), request);
-        private static Response NotFoundResponse(Request request) => new Response(new NotFound(), request);
-        private static Response BadRequestResponse(Request request) => new Response(new BadRequest(), request);
+        private static Response MethodNotAllowedResponse(Request request) => new Response(HttpStatusCodes.MethodNotAllowed, request);
+        private static Response NotFoundResponse(Request request) => new Response(HttpStatusCodes.NotFound, request);
+        private static Response BadRequestResponse(Request request) => new Response(HttpStatusCodes.BadRequest, request);
 
         public Router()
         {

@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -22,7 +21,7 @@ namespace HttpServer.Handlers
                 return CreatePatchResponse(request);
             }
 
-            return new Response(new MethodNotAllowed(), request);
+            return new Response(HttpStatusCodes.MethodNotAllowed, request);
         }
 
         private Response CreatePatchResponse(Request request)
@@ -39,10 +38,10 @@ namespace HttpServer.Handlers
             }
             catch (IOException)
             {
-                return new Response(new BadRequest(), request);
+                return new Response(HttpStatusCodes.BadRequest, request);
             }
 
-            return new Response(new NoContent(), request);
+            return new Response(HttpStatusCodes.NoContent, request);
         }
     }
 }

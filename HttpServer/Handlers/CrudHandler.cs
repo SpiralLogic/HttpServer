@@ -1,7 +1,6 @@
 ﻿using HttpServer.Loggers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -37,22 +36,22 @@ namespace HttpServer.Handlers
                 return RespondWithDataDeleteSuccess(request);
             }
 
-            return new Response(new MethodNotAllowed(), request);
+            return new Response(HttpStatusCodes.MethodNotAllowed, request);
         }
 
         private Response RespondWithData(Request request)
         {
             if (string.IsNullOrEmpty(_data))
-                return new Response(new NotFound(),request);
+                return new Response(HttpStatusCodes.NotFound,request);
 
-            return new Response(new Success(), request) {StringBody = _data};
+            return new Response(HttpStatusCodes.Ok, request) {StringBody = _data};
         }
 
         private Response RespondWithDataCreated(Request request)
         {
             _data = request.Body;
 
-            var response = new Response(new Created(), request) {StringBody = _data};
+            var response = new Response(HttpStatusCodes.Created, request) {StringBody = _data};
 
             response.AddHeader("Location", _dataLocation);
 
@@ -63,14 +62,14 @@ namespace HttpServer.Handlers
         {
             _data = request.Body;
 
-            return new Response(new Success(), request) {StringBody = _data};
+            return new Response(HttpStatusCodes.Ok, request) {StringBody = _data};
         }
 
         private Response RespondWithDataDeleteSuccess(Request request)
         {
             _data = null;
 
-            return new Response(new Success(), request);
+            return new Response(HttpStatusCodes.Ok, request);
         }
     }
 }

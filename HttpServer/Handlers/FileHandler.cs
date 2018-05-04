@@ -2,7 +2,6 @@
 using System.IO;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -25,7 +24,7 @@ namespace HttpServer.Handlers
 
             if (ResourceNotFound(directory, filename))
             {
-                return new Response(new NotFound(), request);
+                return new Response(HttpStatusCodes.NotFound, request);
             }
 
             return CreateSuccessResponse(directory, filename, request);
@@ -40,7 +39,7 @@ namespace HttpServer.Handlers
         {
             try
             {
-                var response = new Response(new Success(), request);
+                var response = new Response(HttpStatusCodes.Ok, request);
                 response.AddHeader("Content-Type", MediaTypeMapper.MediaTypeFromFile(filename));
                 response.BodyBytes = File.ReadAllBytes(Path.Combine(directory, filename));
 
@@ -48,7 +47,7 @@ namespace HttpServer.Handlers
             }
             catch (IOException)
             {
-                return new Response(new NotImplemented(), request);
+                return new Response(HttpStatusCodes.NotImplemented, request);
             }
         }
     }

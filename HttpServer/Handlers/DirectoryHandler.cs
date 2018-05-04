@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -31,7 +30,7 @@ namespace HttpServer.Handlers
 
             if (ResourceNotFound(directoryPath))
             {
-                return new Response(new NotFound(), request);
+                return new Response(HttpStatusCodes.NotFound, request);
             }
 
             return CreateSuccessResponse(directoryPath, request);
@@ -44,7 +43,7 @@ namespace HttpServer.Handlers
 
         private Response CreateSuccessResponse(string directory, Request request)
         {
-            var response = new Response(new Success(), request);
+            var response = new Response(HttpStatusCodes.Ok, request);
 
             var directories = Directory.GetFileSystemEntries(directory).Select(GetFileNameAsLink);
             var responseBody = string.Join("<br>", directories);

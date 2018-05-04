@@ -1,6 +1,5 @@
 ﻿using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -8,7 +7,7 @@ namespace HttpServer.Handlers
     {
         public Response Handle(Request request)
         {
-            return new Response(new Teapot(), request) {StringBody = "I'm a teapot"};
+            return new Response(HttpStatusCodes.Teapot, request) {StringBody = "I'm a teapot"};
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
-using HttpServer.Responses.ResponseCodes;
 
 namespace HttpServer.Handlers
 {
@@ -18,7 +17,7 @@ namespace HttpServer.Handlers
 
         public Response Handle(Request request)
         {
-            var response = new Response(new Success(), request);
+            var response = new Response(HttpStatusCodes.Ok, request);
             response.AddHeader("Allow", CreateAllowHeader());
 
             return response;

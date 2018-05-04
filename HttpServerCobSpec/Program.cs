@@ -16,8 +16,9 @@ namespace HttpServerCobSpec
             {
                 server.Start(5000);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                logger.Log(ex.Message);
             }
 
             while (server.IsRunning)
@@ -30,6 +31,7 @@ namespace HttpServerCobSpec
             var router = new Router();
 
             router.AddDirectoryRoute(RequestType.GET, "/", new DirectoryHandler());
+       //     router.AddRoute(RequestType.GET, "/partial_content.txt", new PartialContentTest());
             router.AddRoute(RequestType.POST, "/form", new FormHandler());
             router.AddRoute(RequestType.PUT, "/put-target", new FormHandler());
 
@@ -45,7 +47,6 @@ namespace HttpServerCobSpec
             router.AddRoute(RequestType.GET, "/redirect", new RedirectHandler("/"));
 
             router.AddRoute(RequestType.PATCH, "/patch-content.txt", new PatchHandler());
-            router.AddRoute(RequestType.GET, "/partial_content.txt", new PartialContentTest());
             router.AddRoute(RequestType.GET, "/cookie", new CookieHandler("Eat"));
             router.AddRoute(RequestType.GET, "/eat_cookie", new CookieHandler("mmmm chocolate"));
 
