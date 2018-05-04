@@ -25,7 +25,7 @@ namespace HttpServer.Handlers
 
         private string CreateAllowHeader()
         {
-            var allowedRequestTypes = _requestTypes.Select(type => Enum.GetName(typeof(RequestType), type));
+            var allowedRequestTypes = _requestTypes.Select(type => type.Name);
 
             return string.Join(", ", allowedRequestTypes);
         }
