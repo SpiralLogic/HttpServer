@@ -2,6 +2,7 @@
 using HttpServer;
 using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
+using HttpServerCobSpec.Handlers;
 
 namespace HttpServerCobSpec
 {
@@ -30,33 +31,33 @@ namespace HttpServerCobSpec
         {
             var router = new Router();
 
-            router.AddDirectoryRoute(RequestType.GET, "/", new DirectoryHandler());
-       //     router.AddRoute(RequestType.GET, "/partial_content.txt", new PartialContentTest());
-            router.AddRoute(RequestType.POST, "/form", new FormHandler());
-            router.AddRoute(RequestType.PUT, "/put-target", new FormHandler());
+            router.AddDirectoryRoute(RequestTypes.Get, "/", new DirectoryHandler());
+            router.AddRoute(RequestTypes.Post, "/form", new StringContentHandler());
+            router.AddRoute(RequestTypes.Put, "/put-target", new StringContentHandler());
 
-            router.AddRoute(RequestType.GET, "/method_options", new StringContentHandler());
-            router.AddRoute(RequestType.PUT, "/method_options", new StringContentHandler());
-            router.AddRoute(RequestType.POST, "/method_options", new StringContentHandler());
-            router.AddRoute(RequestType.GET, "/method_options2", new StringContentHandler());
+            router.AddRoute(RequestTypes.Get, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestTypes.Put, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestTypes.Post, "/method_options", new StringContentHandler());
+            router.AddRoute(RequestTypes.Get, "/method_options2", new StringContentHandler());
 
-            router.AddRoute(RequestType.GET, "/coffee", new Handler418());
-            router.AddRoute(RequestType.GET, "/tea", new StringContentHandler());
-            router.AddRoute(RequestType.GET, "/parameters", new ParameterPrintHandler());
+            router.AddRoute(RequestTypes.Get, "/coffee", new Handler418());
+            router.AddRoute(RequestTypes.Get, "/tea", new StringContentHandler());
+            router.AddRoute(RequestTypes.Get, "/parameters", new ParameterPrintHandler());
 
-            router.AddRoute(RequestType.GET, "/redirect", new RedirectHandler("/"));
+            router.AddRoute(RequestTypes.Get, "/redirect", new RedirectHandler("/"));
 
-            router.AddRoute(RequestType.PATCH, "/patch-content.txt", new PatchHandler());
-            router.AddRoute(RequestType.GET, "/cookie", new CookieHandler("Eat"));
-            router.AddRoute(RequestType.GET, "/eat_cookie", new CookieHandler("mmmm chocolate"));
+            router.AddRoute(RequestTypes.Patch, "/patch-content.txt", new PatchHandler());
+            router.AddRoute(RequestTypes.Get, "/cookie", new CookieHandler("Eat"));
+            router.AddRoute(RequestTypes.Get, "/eat_cookie", new CookieHandler("mmmm chocolate"));
 
-            router.AddRoute(RequestType.GET, "/logs", new BasicAuthHandler("admin", "hunter2"));
+            router.AddRoute(RequestTypes.Get, "/logs", new BasicAuthHandler("admin", "hunter2"));
+ 
             var crudTestHandler = new CrudHandler("/cat-form/data");
 
-            router.AddRoute(RequestType.GET, "/cat-form/data", crudTestHandler);
-            router.AddRoute(RequestType.POST, "/cat-form", crudTestHandler);
-            router.AddRoute(RequestType.PUT, "/cat-form/data", crudTestHandler);
-            router.AddRoute(RequestType.DELETE, "/cat-form/data", crudTestHandler);
+            router.AddRoute(RequestTypes.Get, "/cat-form/data", crudTestHandler);
+            router.AddRoute(RequestTypes.Post, "/cat-form", crudTestHandler);
+            router.AddRoute(RequestTypes.Put, "/cat-form/data", crudTestHandler);
+            router.AddRoute(RequestTypes.Delete, "/cat-form/data", crudTestHandler);
 
             return router;
         }

@@ -21,7 +21,7 @@ namespace HttpServerTest
 
     internal class TestRequest : Request
     {
-        public TestRequest() : base(RequestType.GET, "/", string.Empty, HttpVersion.Version11)
+        public TestRequest() : base(RequestTypes.Get, "/", string.Empty, HttpVersion.Version11)
         {
         }
     }

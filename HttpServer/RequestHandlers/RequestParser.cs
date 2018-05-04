@@ -7,7 +7,7 @@ namespace HttpServer.RequestHandlers
 {
     internal class RequestParser
     {
-        private static Request BadRequest => new Request(RequestType.UNKNOWN, string.Empty, string.Empty, new Version());
+        private static Request BadRequest => new Request(RequestTypes.Unknown, string.Empty, string.Empty, new Version());
 
         public Request Parse(string requestString)
         {
@@ -134,21 +134,21 @@ namespace HttpServer.RequestHandlers
             switch (type)
             {
                 case "GET":
-                    return RequestType.GET;
+                    return RequestTypes.Get;
                 case "HEAD":
-                    return RequestType.HEAD;
+                    return RequestTypes.Head;
                 case "OPTIONS":
-                    return RequestType.OPTIONS;
+                    return RequestTypes.Options;
                 case "POST":
-                    return RequestType.POST;
+                    return RequestTypes.Post;
                 case "PUT":
-                    return RequestType.PUT;
+                    return RequestTypes.Put;
                 case "PATCH":
-                    return RequestType.PATCH;
+                    return RequestTypes.Patch;
                 case "DELETE":
-                    return RequestType.DELETE;
+                    return RequestTypes.Delete;
                 default:
-                    return RequestType.UNKNOWN;
+                    return RequestTypes.Unknown;
             }
         }
 

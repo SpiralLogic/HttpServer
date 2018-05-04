@@ -15,7 +15,7 @@ namespace HttpServerTest.HandlerTests
         [Fact]
         public void BodyHasDirectoryLinksWhenNoFileProvided()
         {
-            var request = new Request(RequestType.GET, "/", "", _httpVersion);
+            var request = new Request(RequestTypes.Get, "/", "", _httpVersion);
             var directoryHandler = new DirectoryHandler(TestDirectory);
 
             var response = directoryHandler.Handle(request);
@@ -26,7 +26,7 @@ namespace HttpServerTest.HandlerTests
         [Fact]
         public void BodyHasFileContentsWhenFileIsProvided()
         {
-            var request = new Request(RequestType.GET, "/test.txt", "test.txt", _httpVersion);
+            var request = new Request(RequestTypes.Get, "/test.txt", "test.txt", _httpVersion);
             var directoryHandler = new DirectoryHandler(TestDirectory);
 
             var response = directoryHandler.Handle(request);

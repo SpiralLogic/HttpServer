@@ -16,22 +16,22 @@ namespace HttpServer.Handlers
 
         public Response Handle(Request request)
         {
-            if (request.Type == RequestType.GET)
+            if (request.Type == RequestTypes.Get)
             {
                 return RespondWithData(request);
             }
 
-            if (request.Type == RequestType.POST)
+            if (request.Type == RequestTypes.Post)
             {
                 return RespondWithDataCreated(request);
             }
 
-            if (request.Type == RequestType.PUT)
+            if (request.Type == RequestTypes.Put)
             {
                 return RespondWithDataUpdateSuccess(request);
             }
 
-            if (request.Type == RequestType.DELETE)
+            if (request.Type == RequestTypes.Delete)
             {
                 return RespondWithDataDeleteSuccess(request);
             }

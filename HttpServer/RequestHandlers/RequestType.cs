@@ -1,14 +1,12 @@
 ﻿namespace HttpServer.RequestHandlers
 {
-    public enum RequestType
+    public class RequestType
     {
-        UNKNOWN,
-        GET,
-        HEAD,
-        POST,
-        PATCH,
-        PUT,
-        DELETE,
-        OPTIONS
+        public RequestType(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
     }
 }

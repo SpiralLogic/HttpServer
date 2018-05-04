@@ -8,7 +8,7 @@ namespace HttpServer.Handlers
 {
     public class DirectoryHandler : IRequestHandler
     {
-        private readonly string _directory;
+        protected readonly string _directory;
         private readonly FileHandler _fileHandler;
 
         public DirectoryHandler(string directory = null)
@@ -17,7 +17,7 @@ namespace HttpServer.Handlers
             _fileHandler = new FileHandler(_directory);
         }
 
-        public Response Handle(Request request)
+        public virtual Response Handle(Request request)
         {
             request = request ?? throw new ArgumentException(nameof(request));
 

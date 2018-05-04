@@ -1,22 +1,21 @@
 ﻿using System.IO;
+using HttpServer.Handlers;
 using HttpServer.RequestHandlers;
 using HttpServer.Responses;
 
-namespace HttpServer.Handlers
+namespace HttpServerCobSpec.Handlers
 {
-    public class PatchHandler : IRequestHandler
+    public class PatchHandler : DirectoryHandler
     {
         private string _etag;
-        private readonly string _directory;
 
-        public PatchHandler(string directory = null)
+        public PatchHandler(string directory = null) : base(directory)
         {
-            _directory = directory ?? Path.Combine(Directory.GetCurrentDirectory(), Constants.DefaultDirectory);
         }
 
-        public Response Handle(Request request)
+        public override Response Handle(Request request)
         {
-            if (request.Type == RequestType.PATCH)
+            if (request.Type == RequestTypes.Patch)
             {
                 return CreatePatchResponse(request);
             }

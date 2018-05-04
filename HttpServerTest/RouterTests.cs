@@ -30,7 +30,7 @@ namespace HttpServerTest
         [Fact]
         public async Task UnsupportedRequestReturnsMethodNotAllowed()
         {
-            _router.AddRoute(RequestType.GET, Resource, _testHandler);
+            _router.AddRoute(RequestTypes.Get, Resource, _testHandler);
 
             var request = new HttpRequestMessage(new HttpMethod("wawa"), CreateRequestUri("wawa"));
             var response = await _testClient.SendAsync(request);
@@ -42,31 +42,31 @@ namespace HttpServerTest
         [Fact]
         public async Task CanCreateGetRoute()
         {
-            _router.AddRoute(RequestType.GET, Resource, _testHandler);
+            _router.AddRoute(RequestTypes.Get, Resource, _testHandler);
 
             await _testClient.GetStringAsync(_uri);
 
             Assert.Equal(Resource, _testHandler.LastRequest.Resource);
-            Assert.Equal(RequestType.GET, _testHandler.LastRequest.Type);
+            Assert.Equal(RequestTypes.Get, _testHandler.LastRequest.Type);
         }
 
         [Fact]
         public async Task CanCreatePostRoute()
         {
-            _router.AddRoute(RequestType.POST, Resource, _testHandler);
+            _router.AddRoute(RequestTypes.Post, Resource, _testHandler);
 
             var request = new HttpRequestMessage(HttpMethod.Post, _uri);
             var response = await _testClient.SendAsync(request);
 
             Assert.True(response.IsSuccessStatusCode);
-            Assert.Equal(RequestType.POST, _testHandler.LastRequest.Type);
+            Assert.Equal(RequestTypes.Post, _testHandler.LastRequest.Type);
             Assert.Equal(Resource, _testHandler.LastRequest.Resource);
         }
 
         [Fact]
         public async Task HeadRequestHasNoBody()
         {
-            _router.AddRoute(RequestType.GET, Resource, _testHandler);
+            _router.AddRoute(RequestTypes.Get, Resource, _testHandler);
 
             var request = new HttpRequestMessage(HttpMethod.Head, _uri);
             var response = await _testClient.SendAsync(request);
@@ -80,7 +80,7 @@ namespace HttpServerTest
         [Fact]
         public async Task GetRequestToFileHasFileContentsInBody()
         {
-            _router.AddRoute(RequestType.GET, Resource, _testHandler);
+            _router.AddRoute(RequestTypes.Get, Resource, _testHandler);
 
             var request = new HttpRequestMessage(HttpMethod.Head, _uri);
             var response = await _testClient.SendAsync(request);

@@ -9,8 +9,7 @@ namespace HttpServer.RequestHandlers
         private readonly IOrderedDictionary _headers
             = new OrderedDictionary();
 
-        internal readonly IDictionary<string, string> Parameters
-            = new Dictionary<string, string>();
+        public readonly IDictionary<string, string> Parameters = new Dictionary<string, string>();
 
         public RequestType Type { get; }
         public Version Version { get; }
@@ -34,12 +33,7 @@ namespace HttpServer.RequestHandlers
             Path = MakePathFrom(resource);
         }
 
-        internal void AddHeader(string feild, string value)
-        {
-            _headers.Add(feild.Trim(), value.Trim());
-        }
-
-        internal bool TryGetHeader(string feild, out string value)
+        public bool TryGetHeader(string feild, out string value)
         {
             if (!_headers.Contains(feild))
             {
@@ -50,6 +44,24 @@ namespace HttpServer.RequestHandlers
 
             value = (string) _headers[feild];
             return true;
+        }
+        
+        public bool TryGetParameter(string feild, out string value)
+        {
+            if (!Parameters.ContainsKey(feild))
+            {
+                value = null;
+
+                return false;
+            }
+
+            value = (string) Parameters[feild];
+            return true;
+        }
+
+        internal void AddHeader(string feild, string value)
+        {
+            _headers.Add(feild.Trim(), value.Trim());
         }
 
         public override string ToString()
@@ -67,7 +79,7 @@ namespace HttpServer.RequestHandlers
             return Resource.Remove(Resource.LastIndexOf(Endpoint, StringComparison.Ordinal));
         }
 
-        public void AddParameter(string field, string value)
+        internal void AddParameter(string field, string value)
         {
             Parameters.TryAdd(field, value);
         }

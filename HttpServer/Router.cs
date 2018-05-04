@@ -23,7 +23,7 @@ namespace HttpServer
 
         public Router()
         {
-            _handlers.Add((RequestType.UNKNOWN, null), new MalformedHandler());
+            _handlers.Add((RequestTypes.Unknown, null), new MalformedHandler());
         }
 
         public void AddRoute(RequestType requestType, string path, IRequestHandler requestHandler)
@@ -42,7 +42,7 @@ namespace HttpServer
         {
             var request = _requestParser.Parse(requestData);
 
-            if (request.Type == RequestType.HEAD)
+            if (request.Type == RequestTypes.Head)
             {
                 return CreateHeadResponse(request);
             }
@@ -62,7 +62,7 @@ namespace HttpServer
                 return MethodNotAllowedResponse(request);
             }
 
-            if (request.Type == RequestType.UNKNOWN)
+            if (request.Type == RequestTypes.Unknown)
             {
                 return BadRequestResponse(request);
             }
@@ -93,20 +93,20 @@ namespace HttpServer
                 _pathOptions.Add(path, requestTypes);
             }
 
-            requestTypes.Add(RequestType.OPTIONS);
+            requestTypes.Add(RequestTypes.Options);
             requestTypes.Add(requestType);
 
-            if (requestType == RequestType.GET)
+            if (requestType == RequestTypes.Get)
             {
-                requestTypes.Add(RequestType.HEAD);
+                requestTypes.Add(RequestTypes.Head);
             }
 
-            _handlers.TryAdd((RequestType.OPTIONS, path), new OptionsHandler(requestTypes));
+            _handlers.TryAdd((RequestTypes.Options, path), new OptionsHandler(requestTypes));
         }
 
         private Response CreateHeadResponse(Request request)
         {
-            if (_handlers.TryGetValue((RequestType.GET, request.Resource), out var requestHandler))
+            if (_handlers.TryGetValue((RequestTypes.Get, request.Resource), out var requestHandler))
             {
                 var response = requestHandler.Handle(request);
                 response.StringBody = string.Empty;

@@ -22,7 +22,7 @@ namespace HttpServer.Handlers
                 response.StringBody = _content;
             }
 
-            request.Parameters.TryGetValue("type", out var type);
+            request.TryGetParameter("type", out var type);
             
             response.AddHeader("Set-Cookie", $"type={type}");
             return response;
